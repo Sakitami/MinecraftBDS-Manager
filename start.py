@@ -70,6 +70,7 @@ if os.path.isfile('ssh.cfg'):
         setssh()
 
 # 读取ssh.cfg
+setssh()
 ssh.read('ssh.cfg')
 ssh_remote = ssh.items('SSH')
 

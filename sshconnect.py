@@ -5,13 +5,16 @@ def sshconnect(ip, port, usern, passwod, command):
     trans.connect(username=usern, password=passwod)
     ssh = paramiko.SSHClient()
     ssh._transport = trans 
+    print(command[0])
+    command_all = 'clear;'
+    for i in command:
+        command_temp = i + ' ;'
+        command_all = command_all + command_temp
+    print(command_all)
+
     try:
-        stdin, stdout, stderr = ssh.exec_command(command)
+        stdin, stdout, stderr = ssh.exec_command(command_all,get_pty=True)
         print(stdout.read().decode())
-        trans.close()
     except:
         print('执行失败！')
-        trans.close()
-
-#sshconnect('pi', 'raspberry')
-#sshcommand('screenfetch')
+    trans.close()
