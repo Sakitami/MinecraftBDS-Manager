@@ -61,6 +61,7 @@ while True:
     
     if func == 1:
         process = os.system('pidof bedrock_server.exe')
+        process = str(process)
         if process.isdecimal() == True:
             check = input('检测到其他PE服务端，是否终止？[n/Y]:')
             if check == 'Y':
