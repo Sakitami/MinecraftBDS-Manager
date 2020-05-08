@@ -1,6 +1,9 @@
-import paramiko
+import configparser
 import os
-from sshconnect import sshconnect, sshcommand, sshclose
+
+import paramiko
+
+from sshconnect import sshconnect
 
 def showinterface1(info=''):
     os.system('clear')
@@ -22,30 +25,53 @@ def checkbedrock():
     else:
         return True
 
-showinterface1()
-ip = input('请输入服务器ip地址：')
-while True:
-    port = input('请输入服务器端口号：')
-    if port.isdecimal() == True:
-        try:
-            port = int(port)
-        except:
+def setssh():
+    # 保存SSH配置
+    ip = input('请输入服务器ip地址：')
+    while True:
+        port = input('请输入服务器端口号：')
+        if port.isdecimal() == True:
+            try:
+                port = int(port)
+            except:
+                showinterface1('非法输入，请重新输入！')
+                continue
+            if port >= 65535 or port <=1:
+                showinterface1('非法输入，请重新输入！')
+                continue
+            break
+        else:
             showinterface1('非法输入，请重新输入！')
-            continue
-        if port >= 65535 or port <=1:
-            showinterface1('非法输入，请重新输入！')
-            continue
-        break
-    else:
-        showinterface1('非法输入，请重新输入！')
 
-while True:
-    user = input('请输入服务器用户名：')
-    if user.isalnum() == True:
-        break
-    else:
-        showinterface1('非法输入，请重新输入！')
-passwd = input('请输入密码：')
+    while True:
+        user = input('请输入服务器用户名：')
+        if user.isalnum() == True:
+            break
+        else:
+            showinterface1('非法输入，请重新输入！')
+    passwd = input('请输入密码：')
+
+    ssh['SSH'] = {
+        'ip':ip,
+        'port':port,
+        'username':user,
+        'password':passwd
+    }
+    with open('ssh.cfg', 'w') as configfile:
+        ssh.write(configfile)
+
+ssh = configparser.ConfigParser()
+config = configparser.ConfigParser()
+
+showinterface1()
+if os.path.isfile('ssh.cfg'):
+    sshcheck = input('检测到已存在的SSH配置，是否使用默认配置？[y/N]:')
+    if sshcheck == 'N':
+        setssh()
+
+# 读取ssh.cfg
+ssh.read('ssh.cfg')
+ssh_remote = ssh.items('SSH')
 
 os.system('clear')
 info = checkbedrock()
@@ -69,7 +95,7 @@ while True:
             else:
                 continue
         if checkbedrock() != True:
-            process = os.system('pidof bedrock_server.exe')
+            process = os.system('python3 Build.py')
             continue
         else:
             check = input('检测到已安装的BDX服务端，是否删除？[n/Y]:')
@@ -82,12 +108,6 @@ while True:
     elif func == 2:
         showinterface2()
         command = input('请输入指令:\n> ')
-        trans = paramiko.Transport((ip, port))
-        sshconnect(user, passwd)
-        sshcommand('screen -r MinecraftPEManager')
-        try:
-            sshcommand(command)
-        except:
-            print('执行失败！')
-            continue
-        sshclose()
+        sshconnect(ssh_remote[0][1], ssh_remote[1][1], ssh_remote[2][1], ssh_remote[3][1], command)
+        break
+        #sshcommand('screen -r MinecraftPEManager')
