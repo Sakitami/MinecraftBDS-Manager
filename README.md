@@ -18,6 +18,7 @@
 ---
 
 前端截图：
+
 ![控制面板](https://i.loli.net/2020/05/10/AePYNXcxK2UQbJO.png)
 ![一键开服](https://i.loli.net/2020/05/10/v7eHV5diFbfALqy.png)
 ![服务器日志](https://i.loli.net/2020/05/10/M5kSuirdzDOhgXc.png)
