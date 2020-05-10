@@ -1,0 +1,1301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Minecraft</class>
+ <widget class="QWidget" name="Minecraft">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>809</width>
+    <height>453</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Minecraft BDS Manager</string>
+  </property>
+  <widget class="QTabWidget" name="build">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>641</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="Control">
+    <attribute name="title">
+     <string>服务器控制</string>
+    </attribute>
+    <widget class="QLabel" name="control_servername_title">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>服务器名：</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="control_servername_edit">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>10</y>
+       <width>231</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Dedicated Server</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>301</width>
+       <height>321</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="control_gamemode_title">
+          <property name="text">
+           <string>游戏模式：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="control_gamemode_combo">
+          <item>
+           <property name="text">
+            <string>生存</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>创造</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>极限</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_chest_title">
+          <property name="text">
+           <string>作弊：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="control_chest_combo">
+          <item>
+           <property name="text">
+            <string>启用</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>禁用</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_maxplayer_title">
+          <property name="text">
+           <string>最大玩家数：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_maxplayer_spin">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>999</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_xbox_title">
+          <property name="text">
+           <string>Xbox验证：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="control_xbox_combo">
+          <item>
+           <property name="text">
+            <string>启用</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>禁用</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_whitelist_title">
+          <property name="text">
+           <string>白名单：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="control_whitelist_combo">
+          <item>
+           <property name="text">
+            <string>启用</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>禁用</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QLabel" name="control_view_title">
+          <property name="text">
+           <string>视野：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_view_spin">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>999</number>
+          </property>
+          <property name="value">
+           <number>32</number>
+          </property>
+          <property name="displayIntegerBase">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_tkdistance_title">
+          <property name="text">
+           <string>Tick distance：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_tkdistance_spin">
+          <property name="minimum">
+           <number>4</number>
+          </property>
+          <property name="maximum">
+           <number>12</number>
+          </property>
+          <property name="value">
+           <number>4</number>
+          </property>
+          <property name="displayIntegerBase">
+           <number>10</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_ktime_title">
+          <property name="text">
+           <string>踢出时间：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_ktime_spin">
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>999</number>
+          </property>
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_maxthread_title">
+          <property name="text">
+           <string>最大线程数：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_maxthread_spin">
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>999</number>
+          </property>
+          <property name="value">
+           <number>8</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_playerchara_title">
+          <property name="text">
+           <string>玩家身份：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="control_playerchara_combo">
+          <item>
+           <property name="text">
+            <string>成员</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>旁观者</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>管理员</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="control_texture_title">
+          <property name="text">
+           <string>材质包：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="control_texture_combo">
+          <item>
+           <property name="text">
+            <string>禁用</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>启用</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_log_title">
+          <property name="text">
+           <string>错误日志：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="control_log_combo">
+          <item>
+           <property name="text">
+            <string>禁用</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>启用</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_zip_title">
+          <property name="text">
+           <string>压缩阀值：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_zip_spin">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>999</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_v4_title">
+          <property name="text">
+           <string>IPv4端口：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_v4_spin">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>65535</number>
+          </property>
+          <property name="value">
+           <number>19132</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="control_v6_title">
+          <property name="text">
+           <string>IPv6端口：</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="control_v6_spin">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>65535</number>
+          </property>
+          <property name="value">
+           <number>19133</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="control_olplayer_title">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>10</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>在线玩家：</string>
+     </property>
+    </widget>
+    <widget class="QListView" name="listView">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>50</y>
+       <width>301</width>
+       <height>131</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>180</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>管理员：</string>
+     </property>
+    </widget>
+    <widget class="QListView" name="listView_2">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>210</y>
+       <width>301</width>
+       <height>81</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="control_op_edit">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>301</y>
+       <width>181</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>添加管理员：</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="horizontalLayoutWidget_3">
+     <property name="geometry">
+      <rect>
+       <x>520</x>
+       <y>290</y>
+       <width>101</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QPushButton" name="control_opadd_button">
+        <property name="text">
+         <string>添加</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="control_opdel_button">
+        <property name="text">
+         <string>删除</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLineEdit" name="control_command_edit">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>340</y>
+       <width>181</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>按Enter执行服务器命令：</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="control_save">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="control_onkick_button">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>10</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>踢出</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="build">
+    <attribute name="title">
+     <string>一键开服</string>
+    </attribute>
+    <widget class="KUrlRequester" name="build_serverdown_choose">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>611</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="url">
+      <url>
+       <string>https://www.github.com/Sakitami/BDX/1.14.60.tar.gz</string>
+      </url>
+     </property>
+    </widget>
+    <widget class="QLabel" name="build_serverdown_title">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>服务端下载：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="build_log_title">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>安装日志：</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="build_log_text">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>611</width>
+       <height>191</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="build_debian10_title">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>340</y>
+       <width>311</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;h2&gt;注：测试功能。仅支持Debian10！&lt;/h2&gt;</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="build_build_button">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开服</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="log">
+    <attribute name="title">
+     <string>日志</string>
+    </attribute>
+    <widget class="QTextBrowser" name="log_log_text">
+     <property name="geometry">
+      <rect>
+       <x>-10</x>
+       <y>-10</y>
+       <width>651</width>
+       <height>341</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="log_save_button">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存日志</string>
+     </property>
+    </widget>
+    <widget class="KUrlRequester" name="log_save_choose">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>340</y>
+       <width>281</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="url">
+      <url>
+       <string/>
+      </url>
+     </property>
+     <property name="filter">
+      <string/>
+     </property>
+     <property name="clickMessage">
+      <string>保存到：</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="whitelist">
+    <attribute name="title">
+     <string>白名单管理</string>
+    </attribute>
+    <widget class="QLineEdit" name="whitelist_add_edit">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>340</y>
+       <width>241</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>添加白名单：</string>
+     </property>
+    </widget>
+    <widget class="QTextBrowser" name="whitelist_whitelist_list">
+     <property name="geometry">
+      <rect>
+       <x>-10</x>
+       <y>-10</y>
+       <width>651</width>
+       <height>341</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="whitelist_del_button">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>删除</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="whitelist_add_button">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>添加</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_6">
+    <attribute name="title">
+     <string>插件管理</string>
+    </attribute>
+    <widget class="QListView" name="plugin_list_lst">
+     <property name="geometry">
+      <rect>
+       <x>-10</x>
+       <y>-10</y>
+       <width>651</width>
+       <height>341</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="KUrlRequester" name="plugin_upload_choose">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>340</y>
+       <width>281</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="url">
+      <url>
+       <string/>
+      </url>
+     </property>
+     <property name="filter">
+      <string/>
+     </property>
+     <property name="clickMessage">
+      <string>上传插件：</string>
+     </property>
+     <property name="placeholderText">
+      <string>上传插件：</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="plugin_onoff_button">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>禁用/启用</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="plugin_del_button">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>删除</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_5">
+    <attribute name="title">
+     <string>插件仓库</string>
+    </attribute>
+    <widget class="QListView" name="pluginstore_pstore_list">
+     <property name="geometry">
+      <rect>
+       <x>-10</x>
+       <y>-10</y>
+       <width>651</width>
+       <height>341</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="pluginstore_ori_edit">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>340</y>
+       <width>241</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>自定义源：</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pluginstore_install_button">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>安装</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pluginstore_switch_button">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>切换</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>关于</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>611</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>软件设置</string>
+     </property>
+     <widget class="QLabel" name="label_28">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>版本：v1.0</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_13">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>40</y>
+        <width>88</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>检查更新</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>611</width>
+        <height>91</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>软件设置</string>
+      </property>
+      <widget class="QLabel" name="label_29">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>版本：v1.0</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_14">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>40</y>
+         <width>88</width>
+         <height>34</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>检查更新</string>
+       </property>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>611</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>软件设置</string>
+       </property>
+       <widget class="QLabel" name="label_30">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>91</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>版本：v1.0</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_15">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>40</y>
+          <width>88</width>
+          <height>34</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>检查更新</string>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="about_software_group">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>611</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>软件设置</string>
+        </property>
+        <widget class="QLabel" name="about_software_title">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>40</y>
+           <width>91</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>版本：v1.0</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="about_vcheck_button">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>40</y>
+           <width>88</width>
+           <height>34</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>检查更新</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="about_thanks_group">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>611</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>鸣谢</string>
+     </property>
+     <widget class="QLabel" name="label_32">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>版本：v1.0</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_17">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>40</y>
+        <width>88</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>检查更新</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="about_about_group">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>611</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>关于</string>
+     </property>
+     <widget class="QLabel" name="about_author_title">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>作者：Sakitami</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="about_github_title">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Github：</string>
+      </property>
+     </widget>
+     <widget class="KUrlLabel" name="about_github_http">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>70</y>
+        <width>221</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>https://www.github.com/Sakitami</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="about_blog_title">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Blog：</string>
+      </property>
+     </widget>
+     <widget class="KUrlLabel" name="about_blog_http">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>90</y>
+        <width>221</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>https://blog.skihome.xyz</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="about_donate_title">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>100</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>捐赠：</string>
+      </property>
+     </widget>
+     <widget class="KUrlLabel" name="about_donate_http">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>110</y>
+        <width>221</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>https://blog.skihome.xyz</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="about_repo_title">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>141</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>项目地址：</string>
+      </property>
+     </widget>
+     <widget class="KUrlLabel" name="about_repo_http">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>130</y>
+        <width>221</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>https://www.github.com/Sakitami</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="about_qt_button">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>140</y>
+        <width>88</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>关于Qt</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>50</y>
+     <width>141</width>
+     <height>391</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="SSH_title">
+      <property name="text">
+       <string>&lt;h3&gt;SSH&lt;/h3&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="IP_title">
+      <property name="text">
+       <string>IP：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="IP_edit">
+      <property name="text">
+       <string>127.0.0.1</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="Port_title">
+      <property name="text">
+       <string>端口：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="Port_edit">
+      <property name="text">
+       <string>22</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="User_title">
+      <property name="text">
+       <string>用户名：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="User_edit">
+      <property name="text">
+       <string>root</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="Password_title">
+      <property name="text">
+       <string>密码：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="KPasswordLineEdit" name="Password_edit"/>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="Connect_button">
+        <property name="text">
+         <string>连接</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="Key_button">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KUrlRequester</class>
+   <extends>QWidget</extends>
+   <header>kurlrequester.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KPasswordLineEdit</class>
+   <extends>QWidget</extends>
+   <header>kpasswordlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KUrlLabel</class>
+   <extends>QLabel</extends>
+   <header>kurllabel.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
