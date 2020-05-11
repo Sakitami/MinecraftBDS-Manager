@@ -52,12 +52,13 @@ class Minecraft:
             elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == 'Failed':
                 self.ui.Connect_button.setText('连接失败')
                 self.ui.Connect_button.setEnabled(True)
-                command = ['screen -r BDX']
-                check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
-                print(check)
-                print(check)
-                if check .find("screen") == -1:
-                    self.ui.log_log_text.append(' \n    没有检测到服务端进程！')
+                return
+            command = ['screen -r BDX']
+            check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
+            print(check)
+            print(check)
+            if check .find("screen") != -1:
+                self.ui.log_log_text.append(' \n    没有检测到服务端进程！')
 
         def SSHCONNECT():
             sshconnecT =Thread(target=SSHconnect)
