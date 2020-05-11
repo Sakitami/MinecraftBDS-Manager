@@ -8,7 +8,7 @@ import configparser
 import re
 import webbrowser
 from threading import Thread
-
+import time
 # from PySide2.QtUiTools import QUiLoader
 from PyQt5 import uic
 from PySide2.QtWidgets import QApplication, QMessageBox
@@ -22,10 +22,11 @@ config.read('config.cfg')
 class Minecraft:
 
     def __init__(self):
+        # 关于页面相关控件
         def CheckVersion(self):
             webbrowser.open("https://github.com/Sakitami/MinecraftBDS-Manager/releases", new=0, autoraise=True)
         
-        # SSH连接线程函数
+        # SSH连接线程入口函数
         def SSHconnect():
             self.ui.Connect_button.setEnabled(False)
             self.ui.Connect_button.setText('连接中')
@@ -60,11 +61,7 @@ class Minecraft:
             if check .find("screen") != -1:
                 self.ui.log_log_text.append(' \n    没有检测到服务端进程！')
 
-        def SSHCONNECT():
-            sshconnecT =Thread(target=SSHconnect)
-            sshconnecT.start()
-            #sshconnecT.join()
-
+        # 服务端搭建线程入口函数
         def ServerBuild():
             self.ui.build_build_button.setText('执行中')
             self.ui.build_build_button.setEnabled(False)
@@ -73,10 +70,11 @@ class Minecraft:
             self.ui.progressBar.setValue(10)
 
             # 从config读取SSH
+            self.ui.build_log_text.clear()
             SSH_IP = config.get("SSH", "server_ip")
             SSH_Port = config.getint("SSH", "server_port")
             SSH_User = config.get("SSH", "server_user")
-            SSH_Password = config.get("SSH", "server_user")
+            SSH_Password = config.get("SSH", "server_pass")
             self.ui.build_log_text.append('已读取SSH信息')
             self.ui.progressBar.setValue(15)
 
@@ -91,11 +89,32 @@ class Minecraft:
             if  download_url.startswith(('http', 'https', 'ftp')) != True:
                 config.set("Server", "local", download_url)
                 config.write(open("config.cfg", "w")) 
-                self.ui.build_log_text.append('从本地' + download_url + '获取服务端')
-
-                sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, download_url, '/home/pi/BDX/local.py')
+                self.ui.build_log_text.append('从本地 \'' + download_url + ' \'获取服务端')
+                time.sleep(5)
                 self.ui.progressBar.setValue(21)
+                try:
+                    sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, download_url, '/home/pi/BDX/local.py')
+                except:
+                    self.ui.build_log_text.append("上传失败！")
+                    self.ui.build_build_button.setText('开服')
+                    self.ui.progressBar.setValue(0)
+                    self.ui.build_build_button.setEnabled(True)
+                    return
+                self.ui.build_log_text.append('')
+                self.ui.progressBar.setValue(45)
                 return
+
+        # SSH连接slot
+        def SSHCONNECT():
+            sshconnecT =Thread(target=SSHconnect, name="SSHCONNECT")
+            sshconnecT.start()
+            #sshconnecT.join()
+
+        # 一键搭建slot
+        def SERVERBUILD():
+            serverbuilD = Thread(target=ServerBuild, name="SERVERBUILD")
+            serverbuilD.start()
+
 
             self.ui.build_log_text.append('从 ' +download_url+ '获取服务端')
             f1 = open('build-shell/build-debian10.sh')
@@ -115,7 +134,7 @@ class Minecraft:
         self.ui.about_vcheck_button.clicked.connect(CheckVersion)
         
         #一键开服标签页
-        self.ui.build_build_button.clicked.connect(ServerBuild)
+        self.ui.build_build_button.clicked.connect(SERVERBUILD)
 
 add = QApplication([])
 minecraft = Minecraft()
