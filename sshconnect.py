@@ -1,7 +1,11 @@
 import paramiko
 
+# SSH连接函数
 def sshconnect(ip, port, usern, passwod, command=[]):
-    trans = paramiko.Transport((ip, port))
+    try:
+        trans = paramiko.Transport((ip, port))
+    except:
+        return 'Failed'
     try:
         trans.connect(username=usern, password=passwod)
     except:
@@ -26,3 +30,15 @@ def sshconnect(ip, port, usern, passwod, command=[]):
     else:
         trans.close()
         return True
+
+# 发送文件函数
+def sshsend(ip, port, usern, passwod, file, local):
+    trans = paramiko.Transport((ip, port))
+    try:
+        trans.connect(username=usern, password=passwod)
+    except:
+        return False
+    sftp = paramiko.SFTPClient.from_transport(trans)
+    sftp.put(file, local)
+    trans.close()
+    return True

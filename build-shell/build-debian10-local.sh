@@ -13,6 +13,5 @@ make
 Wine build complete
 make install
 cd /root/BDX/
-wget https://github.com/Sakitami/MinecraftBDS-Manager/Server/linuxbedrock-1.14.60.zip
 unzip *.zip
 rm -rf *.zip
