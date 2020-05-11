@@ -5,9 +5,11 @@
 #               Then I'll thank you for your suggestions.                   #
 #################################################
 import configparser
-import webbrowser
 import re
-#from PySide2.QtUiTools import QUiLoader
+import webbrowser
+from threading import Thread
+
+# from PySide2.QtUiTools import QUiLoader
 from PyQt5 import uic
 from PySide2.QtWidgets import QApplication, QMessageBox
 
@@ -27,23 +29,29 @@ config.read('config.cfg')
 class Minecraft:
 
     def __init__(self):
-
-        def getservernameText(self):
-            Server_name = self
-        def getIPText(self):
-            SSH_IP = self
-        def getPortText(self):
-            SSH_Port = self
-        def getUserText(self):
-            SSH_User = self
-        def getPasswordText(self):
-            SSH_Password = self
-        
         def CheckVersion(self):
             webbrowser.open("https://github.com/Sakitami/MinecraftBDS-Manager/releases", new=0, autoraise=True)
         
         def SSHconnect():
-            print(SSH_IP + SSH_Port + SSH_User + SSH_Password)     
+            self.ui.Connect_button.setEnabled(False)
+            self.ui.Connect_button.setText('连接中')
+            SSH_IP = self.ui.IP_edit.text()
+            SSH_Port = self.ui.Port_edit.text()
+            SSH_User = self.ui.User_edit.text()
+            SSH_Password = self.ui.Password_edit.text()
+            SSH_Port = int(SSH_Port)
+            SSH_Password = SSH_Password
+            #config.set("SSH", "server_ip", SSH_IP)
+            #config.set("SSH", "server_port", SSH_Port)
+            #config.set("SSH", "server_user", SSH_User)
+            #config.set("SSH", "server_pass", SSH_Password)
+
+            if sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == True:
+                self.ui.Connect_button.setText('连接成功')
+        def SSHCONNECT():
+            sshconnecT =Thread(target=SSHconnect)
+            sshconnecT.start()
+            sshconnecT.join()
 
         def ServerBuild():
             url_head = ('http', 'https', 'ftp')
@@ -70,12 +78,13 @@ class Minecraft:
         self.ui = uic.loadUi('UI/main.ui')
 
         # SSH连接
-        self.ui.IP_edit.textChanged.connect(getIPText)
-        self.ui.Port_edit.textChanged.connect(getPortText)
-        self.ui.User_edit.textChanged.connect(getUserText)
-        self.ui.Password_edit.textChanged.connect(getPasswordText)
-        self.ui.Connect_button.clicked.connect(SSHconnect)
-        self.ui.control_servername_edit.textChanged.connect(getservernameText)
+        self.ui.Connect_button.clicked.connect(SSHCONNECT)
+        #self.ui.IP_edit.textChanged.connect(getIPText)
+        #self.ui.Port_edit.textChanged.connect(getPortText)
+        #self.ui.User_edit.textChanged.connect(getUserText)
+        #self.ui.Password_edit.textChanged.connect(getPasswordText)
+        #self.ui.Connect_button.clicked.connect(SSHconnect)
+        #self.ui.control_servername_edit.textChanged.connect(getservernameText)
 
         # 关于标签页
         self.ui.about_vcheck_button.clicked.connect(CheckVersion)

@@ -20,4 +20,5 @@ def sshconnect(ip, port, usern, passwod, command=[]):
             print('执行失败！')
         trans.close()
     else:
+        trans.close()
         return True
