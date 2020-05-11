@@ -13,10 +13,6 @@ make
 Wine build complete
 make install
 cd /root/BDX/
-wget https://minecraft.azureedge.net/bin-win/bedrock-server-1.14.60.5.zip
-unzip bedrock-server-1.14.60.5.zip
-wget https://github.com/Sysca11/BedrockX-bin/blob/master/20200425_delta.7z
-unzip 20200425_delta.7z
-wget .zip
-unzip .zip
-rm -rf bedrock-server-1.14.60.5.zip 20200425_delta.7z
+wget bedrockserver.zip
+unzip *.zip
+rm -rf *.zip
