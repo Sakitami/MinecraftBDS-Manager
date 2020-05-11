@@ -15,13 +15,6 @@ from PySide2.QtWidgets import QApplication, QMessageBox
 
 from sshconnect import sshconnect
 
-# 初始化变量
-Server_name = ''
-SSH_IP = ''
-SSH_Port = ''
-SSH_User = ''
-SSH_Password = ''
-
 # 读取配置数据
 config = configparser.ConfigParser()
 config.read('config.cfg')
@@ -32,6 +25,7 @@ class Minecraft:
         def CheckVersion(self):
             webbrowser.open("https://github.com/Sakitami/MinecraftBDS-Manager/releases", new=0, autoraise=True)
         
+        # SSH连接线程函数
         def SSHconnect():
             self.ui.Connect_button.setEnabled(False)
             self.ui.Connect_button.setText('连接中')
@@ -48,13 +42,24 @@ class Minecraft:
 
             if sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == True:
                 self.ui.Connect_button.setText('连接成功')
+            elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == 'Failed':
+                self.ui.Connect_button.setText('连接失败')
+                self.ui.Connect_button.setEnabled(True)
+                command = ['screen -r BDX']
+                check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
+                print(check)
+                print(check)
+                if check .find("screen") == -1:
+                    self.ui.log_log_text.append('没有检测到服务端进程！')
+
         def SSHCONNECT():
             sshconnecT =Thread(target=SSHconnect)
             sshconnecT.start()
-            sshconnecT.join()
+            #sshconnecT.join()
 
         def ServerBuild():
-            url_head = ('http', 'https', 'ftp')
+            self.ui.build_build_button.setText('执行中')
+            self.ui.build_build_button.setEnabled(False)
             self.ui.progressBar.setRange(0,10)
             self.ui.build_build_button.setEnabled(False)
             self.ui.build_log_text.append('开始构建...')
@@ -63,7 +68,7 @@ class Minecraft:
             if  download_url == '':
                 download_url = config.get("Server", "download_url")
 
-            if not download_url.startswith(url_head) == True:
+            if  download_url.startswith(('http', 'https', 'ftp')) != True:
                 print()
 
             self.ui.build_log_text.append('从 ' +download_url+ '获取服务端')
@@ -79,18 +84,13 @@ class Minecraft:
 
         # SSH连接
         self.ui.Connect_button.clicked.connect(SSHCONNECT)
-        #self.ui.IP_edit.textChanged.connect(getIPText)
-        #self.ui.Port_edit.textChanged.connect(getPortText)
-        #self.ui.User_edit.textChanged.connect(getUserText)
-        #self.ui.Password_edit.textChanged.connect(getPasswordText)
-        #self.ui.Connect_button.clicked.connect(SSHconnect)
-        #self.ui.control_servername_edit.textChanged.connect(getservernameText)
 
         # 关于标签页
         self.ui.about_vcheck_button.clicked.connect(CheckVersion)
         
         #一键开服标签页
         self.ui.build_build_button.clicked.connect(ServerBuild)
+
 add = QApplication([])
 minecraft = Minecraft()
 minecraft.ui.show()
