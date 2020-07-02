@@ -42,3 +42,5 @@ def sshsend(ip, port, usern, passwod, file, local):
     sftp.put(file, local)
     trans.close()
     return True
+
+#sshsend('192.168.3.213', 22, 'pi', 'raspberry', 'C:\Users\harri\Documents\Github\MinecraftBDS-Manager\error.py', '/home/pi/BDX/local.py')

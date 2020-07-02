@@ -12,7 +12,7 @@ from threading import Thread
 # from PySide2.QtUiTools import QUiLoader
 from PyQt5 import uic
 #from PyQt5.QtCore import QThread
-from PySide2.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from sshconnect import sshconnect, sshsend
 
@@ -21,47 +21,6 @@ config = configparser.ConfigParser()
 config.read('config.cfg')
 
 class Minecraft:
-
-    def ServerBuild(self):
-        self.ui.build_build_button.setText('执行中')
-        self.ui.build_build_button.setEnabled(False)
-        self.ui.progressBar.setRange(0,100)
-        self.ui.build_log_text.append('开始构建...')
-        self.ui.progressBar.setValue(10)
-
-        # 从config读取SSH
-        self.ui.build_log_text.clear()
-        SSH_IP = config.get("SSH", "server_ip")
-        SSH_Port = config.getint("SSH", "server_port")
-        SSH_User = config.get("SSH", "server_user")
-        SSH_Password = config.get("SSH", "server_pass")
-        self.ui.build_log_text.append('已读取SSH信息')
-        self.ui.progressBar.setValue(15)
-
-        # 读取用户自定义下载地址
-        download_url = self.ui.log_save_edit_2.text()
-        if  download_url == '':
-            download_url = config.get("Server", "download_url")
-            self.ui.build_log_text.append('已读取用户自定义下载地址')
-            self.ui.progressBar.setValue(17)
-        # 本地上传
-        if  download_url.startswith(('http', 'https', 'ftp')) != True:
-            config.set("Server", "local", download_url)
-            config.write(open("config.cfg", "w")) 
-            self.ui.build_log_text.append('从本地 \'' + download_url + ' \'获取服务端')
-            #time.sleep(5)
-            self.ui.progressBar.setValue(21)
-            try:
-                sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, download_url, '/home/pi/BDX/local.py')
-            except:
-                self.ui.build_log_text.append("上传失败！")
-                self.ui.build_build_button.setText('开服')
-                self.ui.progressBar.setValue(0)
-                self.ui.build_build_button.setEnabled(True)
-                return
-            self.ui.build_log_text.append('')
-            self.ui.progressBar.setValue(45)
-        return
     def __init__(self):
         # 关于页面相关控件
         def CheckVersion(self):
@@ -69,8 +28,14 @@ class Minecraft:
         
         # SSH连接线程入口函数
         def SSHconnect():
+            self.ui.progressBar.setRange(0,100)
             self.ui.Connect_button.setEnabled(False)
+            self.ui.IP_edit.setEnabled(False)
+            self.ui.Port_edit.setEnabled(False)
+            self.ui.User_edit.setEnabled(False)
+            self.ui.Password_edit.setEnabled(False)
             self.ui.Connect_button.setText('连接中')
+            self.ui.progressBar.setValue(10)
             SSH_IP = self.ui.IP_edit.text()
             SSH_Port = self.ui.Port_edit.text()
             SSH_Port = str(SSH_Port)
@@ -87,20 +52,82 @@ class Minecraft:
             except:
                 self.ui.Connect_button.setText('输入有误')
                 self.ui.Connect_button.setEnabled(True)
+                self.ui.progressBar.reset()
+                self.ui.IP_edit.setEnabled(True)
+                self.ui.Port_edit.setEnabled(True)
+                self.ui.User_edit.setEnabled(True)
+                self.ui.Password_edit.setEnabled(True)
                 return
 
             if sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == True:
                 self.ui.Connect_button.setText('连接成功')
+                self.ui.progressBar.setValue(100)
             elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == 'Failed':
                 self.ui.Connect_button.setText('连接失败')
                 self.ui.Connect_button.setEnabled(True)
+                self.ui.progressBar.reset()
+                self.ui.IP_edit.setEnabled(True)
+                self.ui.Port_edit.setEnabled(True)
+                self.ui.User_edit.setEnabled(True)
+                self.ui.Password_edit.setEnabled(True)
                 return
-            command = ['screen -r BDX']
+            command = ['screen -r EZ']
             check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
             if check .find("screen") != -1:
-                self.ui.log_log_text.append(' \n    没有检测到服务端进程！')
+                self.ui.log_log_text.append(' \n没有检测到服务端进程！')
 
         # 服务端搭建线程入口函数
+        def ServerBuild(self):
+            self.ui.build_build_button.setText('执行中')
+            self.ui.build_build_button.setEnabled(False)
+            self.ui.progressBar.setRange(0,100)
+            self.ui.build_log_text.append('开始构建...')
+            self.ui.progressBar.setValue(10)
+
+            # 从config读取SSH
+            self.ui.build_log_text.clear()
+            SSH_IP = config.get("SSH", "server_ip")
+            SSH_Port = config.getint("SSH", "server_port")
+            SSH_User = config.get("SSH", "server_user")
+            SSH_Password = config.get("SSH", "server_pass")
+            self.ui.build_log_text.append('已读取SSH信息')
+            self.ui.progressBar.setValue(15)
+            if sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == True:
+                self.ui.build_log_text.append('SSH连接有效！')
+                self.ui.progressBar.setValue(17)
+            elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == 'Failed':
+                self.ui.build_log_text.append('SSH连接失败')
+                self.ui.build_build_button.setText('开服')
+                self.ui.progressBar.reset()
+                self.ui.build_build_button.setEnabled(True)
+
+            # 读取用户自定义下载地址
+            download_url = self.ui.log_save_edit_2.text()
+            if  download_url == '':
+                download_url = config.get("Server", "download_url")
+                self.ui.build_log_text.append('使用默认下载地址')
+                self.ui.progressBar.setValue(20)
+            # 本地上传
+            if  download_url.startswith(('http', 'https', 'ftp')) != True:
+                config.set("Server", "local", download_url)
+                config.write(open("config.cfg", "w")) 
+                self.ui.build_log_text.append('从本地 \'' + download_url + ' \'获取服务端')
+                #time.sleep(5)
+                self.ui.progressBar.setValue(20)
+                try:
+                    sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, download_url, '/home/pi/BDX/local.py')
+                except:
+                    self.ui.build_log_text.append("上传失败！")
+                    self.ui.build_build_button.setText('开服')
+                    self.ui.progressBar.reset()
+                    self.ui.build_build_button.setEnabled(True)
+                    return
+            if  download_url.startswith(('http', 'https', 'ftp')) == True:
+                self.ui.build_log_text.append('使用用户自定义下载地址')
+                self.ui.progressBar.setValue(20)
+                self.ui.build_log_text.append('')
+                self.ui.progressBar.setValue(45)
+            return
 
         # SSH连接slot
         def SSHCONNECT():
@@ -110,7 +137,7 @@ class Minecraft:
 
         # 一键搭建slot
         def SERVERBUILD():
-            serverbuilD = Thread(target=self.ServerBuild, name="SERVERBUILD")
+            serverbuilD = Thread(target=ServerBuild(self), name="SERVERBUILD")
             serverbuilD.start()
 
 
