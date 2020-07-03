@@ -19,6 +19,8 @@ from sshconnect import sshconnect, sshsend
 
 
 # 读取配置数据
+shutil.copy('config_template.cfg', 'config.cfg')
+
 config = configparser.ConfigParser()
 config.read('config.cfg')
 
@@ -58,7 +60,7 @@ class SSH(QThread):
             return
         command = ['screen -r EZ']
         check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
-        if check .find("screen") == True:
+        if check .find("screen") != -1:
             self.OutConsole.emit(' \n没有检测到服务端进程！')
             return
         else:
@@ -144,22 +146,77 @@ class Control(QThread):
         self.saving = False
         # self.wait()
     def run(self):
-        config.get("CONTROL", 'gamemode')
-        config.get("CONTROL", 'allow-cheats')
-        config.getint("CONTROL", 'max-players')
-        config.get("CONTROL", 'online-mode')
-        config.get("CONTROL", 'white-list')
-        config.getint("CONTROL", 'view-distance')
-        config.getint("CONTROL", 'tick-distance')
-        config.getint("CONTROL", 'player-idle-timeout')
-        config.getint("CONTROL", 'max-threads')
-        config.get("CONTROL", 'default-player-permission-level')
-        config.get("CONTROL", 'texturepack-required')
-        config.get("CONTROL", 'content-log-file-enabled')
-        config.getint("CONTROL", 'compression-threshold')
-        config.getint("CONTROL", 'server-port')
-        config.getint("CONTROL", 'server-portv6')
-        shutil.copy('Server/server.properties.cfg', 'Server/server.properties')
+        server_name = config.get("CONTROL", 'server-name')
+        gamemode = config.get("CONTROL", 'gamemode')
+        cheats = config.get("CONTROL", 'allow-cheats')
+        max_players = config.getint("CONTROL", 'max-players')
+        online_mode = config.get("CONTROL", 'online-mode')
+        white_list = config.get("CONTROL", 'white-list')
+        view_distance = config.getint("CONTROL", 'view-distance')
+        tick_distance = config.getint("CONTROL", 'tick-distance')
+        player_idle_timeout = config.getint("CONTROL", 'player-idle-timeout')
+        max_threads = config.getint("CONTROL", 'max-threads')
+        player_chara = config.get("CONTROL", 'default-player-permission-level')
+        texture = config.get("CONTROL", 'texturepack-required')
+        error_log = config.get("CONTROL", 'content-log-file-enabled')
+        compress = config.getint("CONTROL", 'compression-threshold')
+        server_port = config.getint("CONTROL", 'server-port')
+        server_port_v6 = config.getint("CONTROL", 'server-portv6')
+        try:
+            os.mkdir('Snap')
+        except:
+            pass
+        shutil.copy('Server/server.properties.cfg', 'Snap/server.properties2.cfg')
+
+        SSH_IP = config.get("SSH", "server_ip")
+        SSH_Port = config.get("SSH", "server_port")
+        SSH_User = config.get("SSH", "server_user")
+        SSH_Password = config.get("SSH", "server_pass")
+
+        self.OutProgress.emit(50)
+        config2 = configparser.ConfigParser()
+        config2.read('Snap/server.properties2.cfg')
+        config2.set("CONTROL", 'server-name', server_name)
+        config2.set("CONTROL", 'gamemode', gamemode)
+        config2.set("CONTROL", 'allow-cheats', cheats)
+        config2.set("CONTROL", 'max-players', str(max_players))
+        config2.set("CONTROL", 'online-mode', online_mode)
+        config2.set("CONTROL", 'white-list', white_list)
+        config2.set("CONTROL", 'view-distance', str(view_distance))
+        config2.set("CONTROL", 'tick-distance', str(tick_distance))
+        config2.set("CONTROL", 'player-idle-timeout', str(player_idle_timeout))
+        config2.set("CONTROL", 'max-threads', str(max_threads))
+        config2.set("CONTROL", 'default-player-permission-level', player_chara)
+        config2.set("CONTROL", 'texturepack-required', texture)
+        config2.set("CONTROL", 'content-log-file-enabled', error_log)
+        config2.set("CONTROL", 'compression-threshold', str(compress))
+        config2.set("CONTROL", 'server-port', str(server_port))
+        config2.set("CONTROL", 'server-portv6', str(server_port_v6))
+        config2.write(open("Snap/server.properties2.cfg", "w"))
+        self.OutProgress.emit(60)
+        shutil.copy('Snap/server.properties2.cfg', 'Snap/server.properties_snap')
+        create_server = open('Snap/server.properties_snap', 'r+')
+        open('Snap/server.properties_snap2', 'w').write(re.sub(r"\[CONTROL\]", "# By MCPEManager", create_server.read()))
+        create_server.close()
+        f = open("Snap/server.properties_snap2")
+        conf = f.read()
+        conf = conf.replace(" = ","=")
+        open('server.properties', 'w').write(conf)
+        f.close()
+        try:
+            sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'server.properties', '/root/EZ/server.properties')
+            self.OutProgress.emit(80)
+        except:
+            self.OutPut.emit('保存失败！')
+            self.OutProgress.emit(0)
+        try:
+            sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command=['screen -S EZ -X quit', 'screen -r EZ'])
+            self.OutPut.emit('保存成功！')
+            self.OutProgress.emit(100)
+        except:
+            self.OutPut.emit('保存失败！')
+            self.OutProgress.emit(0)
+        return
 
 # 界面操作
 class Minecraft:
@@ -183,6 +240,8 @@ class Minecraft:
         # 服务器控制
         self.Control_QThread = Control()
         self.ui.control_save.clicked.connect(self.Control_Start)
+        self.Control_QThread.OutProgress.connect(self.ProgressBar)
+        self.Control_QThread.OutPut.connect(self.Control_button_show)
 
     # 关于页面相关控件
     def CheckVersion(self):
@@ -253,11 +312,10 @@ class Minecraft:
     def Control_Start(self):
         if config.getint('SSH', 'connected') == 0:
             self.ui.control_save.setText('SSH未连接')
-            time.sleep(5)
-            self.ui.control_save.setText('保存')
         else:
             self.ui.control_save.setEnabled(False)
             self.ui.control_save.setText('保存中')
+            self.ui.control_servername_edit.setEnabled(False)
             self.ui.control_gamemode_combo.setEnabled(False)
             self.ui.control_chest_combo.setEnabled(False)
             self.ui.control_maxplayer_spin.setEnabled(False)
@@ -273,6 +331,7 @@ class Minecraft:
             self.ui.control_zip_spin.setEnabled(False)
             self.ui.control_v4_spin.setEnabled(False)
             self.ui.control_v6_spin.setEnabled(False)
+            config.set("CONTROL", 'server-name', str(self.ui.control_servername_edit.text()))
             config.set("CONTROL", 'gamemode', self.ui.control_gamemode_combo.currentText())
             config.set("CONTROL", 'allow-cheats', self.ui.control_chest_combo.currentText())
             config.set("CONTROL", 'max-players', str(self.ui.control_maxplayer_spin.value()))
@@ -289,7 +348,28 @@ class Minecraft:
             config.set("CONTROL", 'server-port', str(self.ui.control_v4_spin.value()))
             config.set("CONTROL", 'server-portv6', str(self.ui.control_v6_spin.value()))
             config.write(open("config.cfg", "w"))
+            self.ui.progressBar.setValue(10)
             self.Control_QThread.start()
+    def Control_button_show(self, text):
+        self.ui.control_save.setText(text)
+        self.ui.control_servername_edit.setEnabled(True)
+        self.ui.control_save.setEnabled(True)
+        self.ui.control_gamemode_combo.setEnabled(True)
+        self.ui.control_chest_combo.setEnabled(True)
+        self.ui.control_maxplayer_spin.setEnabled(True)
+        self.ui.control_xbox_combo.setEnabled(True)
+        self.ui.control_whitelist_combo.setEnabled(True)
+        self.ui.control_view_spin.setEnabled(True)
+        self.ui.control_tkdistance_spin.setEnabled(True)
+        self.ui.control_ktime_spin.setEnabled(True)
+        self.ui.control_maxthread_spin.setEnabled(True)
+        self.ui.control_playerchara_combo.setEnabled(True)
+        self.ui.control_texture_combo.setEnabled(True)
+        self.ui.control_log_combo.setEnabled(True)
+        self.ui.control_zip_spin.setEnabled(True)
+        self.ui.control_v4_spin.setEnabled(True)
+        self.ui.control_v6_spin.setEnabled(True)
+
     # 进度条显示
     def ProgressBar(self, progress_int):
         self.ui.progressBar.setValue(progress_int)
