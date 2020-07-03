@@ -1,0 +1,68 @@
+mod-enabled: true
+mod-default-enabled: false
+log-settings:
+  format: "%6$s %1$c [%2$s] (%3$s:%4$d) %5$s"
+  database: log.db
+  hide-verbose: false
+  filters: []
+  verbose:
+    before: ""
+    after: ""
+  information:
+    before: ""
+    after: ""
+  warning:
+    before: ""
+    after: ""
+  error:
+    before: ""
+    after: ""
+  unknown:
+    before: ""
+    after: ""
+mods:
+  Audit:
+    enabled: false
+  BasicAntiCheat:
+    enabled: false
+  Blacklist:
+    enabled: false
+  BossBarSupport:
+    enabled: false
+  Bus:
+    enabled: false
+  ChatAPI:
+    enabled: false
+  CommandSupport:
+    enabled: false
+  CrashHandler:
+    enabled: false
+  CustomScoreboard:
+    enabled: false
+  DebugTool:
+    enabled: false
+  DynamicMotd:
+    enabled: false
+  Economy:
+    enabled: false
+  Essentials:
+    enabled: false
+  Experimental:
+    enabled: false
+  FlatWorld:
+    enabled: false
+  NetworkStatus:
+    enabled: false
+  NoEncryption:
+    enabled: false
+  NullPlayerData:
+    enabled: false
+  PacketDumper:
+    enabled: false
+  ScriptingSupport:
+    enabled: false
+  SignCommand:
+    enabled: false
+  SpawnProtection:
+    enabled: false
+user-database: user.db

@@ -6,6 +6,7 @@
 #################################################
 import configparser
 import re
+import time
 import webbrowser
 from threading import Thread
 
@@ -81,11 +82,11 @@ class Minecraft:
             self.ui.build_build_button.setText('执行中')
             self.ui.build_build_button.setEnabled(False)
             self.ui.progressBar.setRange(0,100)
+            self.ui.build_log_text.clear()
             self.ui.build_log_text.append('开始构建...')
             self.ui.progressBar.setValue(10)
 
             # 从config读取SSH
-            self.ui.build_log_text.clear()
             SSH_IP = config.get("SSH", "server_ip")
             SSH_Port = config.getint("SSH", "server_port")
             SSH_User = config.get("SSH", "server_user")
@@ -108,7 +109,7 @@ class Minecraft:
                 self.ui.build_log_text.append('使用默认下载地址')
                 self.ui.progressBar.setValue(20)
             # 本地上传
-            if  download_url.startswith(('http', 'https', 'ftp')) != True:
+            elif  download_url.startswith(('http', 'https', 'ftp')) != True:
                 config.set("Server", "local", download_url)
                 config.write(open("config.cfg", "w")) 
                 self.ui.build_log_text.append('从本地 \'' + download_url + ' \'获取服务端')
@@ -122,7 +123,7 @@ class Minecraft:
                     self.ui.progressBar.reset()
                     self.ui.build_build_button.setEnabled(True)
                     return
-            if  download_url.startswith(('http', 'https', 'ftp')) == True:
+            elif  download_url.startswith(('http', 'https', 'ftp')) == True:
                 self.ui.build_log_text.append('使用用户自定义下载地址')
                 self.ui.progressBar.setValue(20)
                 self.ui.build_log_text.append('')

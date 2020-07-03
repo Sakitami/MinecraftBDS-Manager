@@ -1,5 +1,5 @@
 apt update -y
-apt install gcc g++ make flex bison xserver-xorg-dev unzip p7zip-full vim
+apt install -y gcc g++ make flex bison xserver-xorg-dev unzip p7zip-full vim
 wget https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/Debian_10/amd64/libfaudio0_20.01-0~buster_amd64.deb
 dpkg -i libfaudio0_20.01-0~buster_amd64.deb
 apt -f install
@@ -12,7 +12,10 @@ cd wine-5.7
 make
 Wine build complete
 make install
-cd /root/BDX/
-wget bedrockserver.zip
+cd /root/EZ/
+wget https://github.com/Sakitami/MinecraftBDS-Manager/blob/master/Server/linuxbedrock-1.14.60.zip
 unzip *.zip
 rm -rf *.zip
+apt install -y screen
+screen -R EZ
+wine EZ.bat

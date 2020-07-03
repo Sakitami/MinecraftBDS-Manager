@@ -11,7 +11,7 @@ import webbrowser
 
 # from PySide2.QtUiTools import QUiLoader
 from PyQt5 import uic
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from sshconnect import sshconnect, sshsend
@@ -65,11 +65,17 @@ class Build_thread(QThread):
         return
 
 class SSH_Connect(QThread):
+    trigger = pyqtSignal(str)
     def __init__(self):
-        super().__init__()
+        super(SSH_Connect, self).__init__()
      # SSH连接线程入口函数
     def SSHconnect(self):
         self.ui.Connect_button.setEnabled(False)
+        self.ui.Connect_button.setEnabled(False)
+        self.ui.IP_edit.setEnabled(False)
+        self.ui.Port_edit.setEnabled(False)
+        self.ui.User_edit.setEnabled(False)
+        self.ui.Password_edit.setEnabled(False)
         self.ui.Connect_button.setText('连接中')
         SSH_IP = self.ui.IP_edit.text()
         SSH_Port = self.ui.Port_edit.text()
@@ -107,11 +113,14 @@ class Minecraft:
             webbrowser.open("https://github.com/Sakitami/MinecraftBDS-Manager/releases", new=0, autoraise=True)
         # 服务端搭建线程入口函数
 
-        # SSH连接slot
+
+        # SSH连接slot--启动线程
         def SSHCONNECT(self):
-            self.sshconnecT = SSH_Connect()
-            self.sshconnecT.start()
+            self.SSHconnect.start()
+            self.SSHconnect.trigger.connect(self.chengshoucanshu)
             #sshconnecT.join()
+        def chengshoucanshu(self, str):
+            self.listWidget.addItem(str)
 
         # 一键搭建slot
         def SERVERBUILD(self):
@@ -131,6 +140,7 @@ class Minecraft:
         self.ui = uic.loadUi('UI/main.ui')
 
         # SSH连接
+        self.SSHconnect = SSH_Connect()
         self.ui.Connect_button.clicked.connect(SSHCONNECT)
 
         # 关于标签页
