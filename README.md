@@ -23,7 +23,9 @@
 ![一键开服](https://i.loli.net/2020/05/10/v7eHV5diFbfALqy.png)
 ![服务器日志](https://i.loli.net/2020/05/10/M5kSuirdzDOhgXc.png)
 ![白名单管理](https://i.loli.net/2020/05/10/wFNUbYREWQ25gGa.png)
+![白名单管理-新](https://i.loli.net/2020/07/05/9bhg7PyYdLmEcJl.png)
 ![插件管理](https://i.loli.net/2020/05/10/gfen4Vi78hdPbX1.png)
+![插件管理-新](https://i.loli.net/2020/07/05/Bbgc6QZxrpkT7Fw.png)
 ![插件仓库](https://i.loli.net/2020/05/10/gBfc6qLskXoAEme.png)
 
 ---
@@ -48,6 +50,10 @@
 - ~~服务器设置功能开发中~~
 - 初步实现了服务器控制功能（部分）
 - 仍在开发中！
+
+[20.07.04]
+- 部分完成了白名单功能
+- 完善了插件管理部分UI界面
 
 ---
 
