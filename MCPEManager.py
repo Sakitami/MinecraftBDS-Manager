@@ -13,10 +13,11 @@ import time
 
 from PyQt5 import uic
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableWidgetItem, QAbstractItemView, QHeaderView
 
 from sshconnect import sshconnect, sshsend
-from whitelist import read_whitelist, write_whitelist, add_whitelist
+
+from whitelist import read_whitelist, write_whitelist, add_whitelist, del_whitelist
 
 
 # 读取配置数据
@@ -31,12 +32,11 @@ class SSH(QThread):
     OutPut = pyqtSignal(str)
     OutProgress = pyqtSignal(int)
     OutConsole = pyqtSignal(str)
-    OutWhistlist = pyqtSignal(int)
+    OutWhitelist = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(SSH, self).__init__(parent)
         self.connecting = True
-        OutWhistlist = 0
 
     def __del__(self):
         self.connceting = False
@@ -63,6 +63,7 @@ class SSH(QThread):
             return
         command = ['screen -r EZ']
         check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
+        print(check)
         self.OutConsole.emit(check)
         if check.find("screen") == True:
             self.OutConsole.emit(' \n没有检测到服务端进程！')
@@ -73,7 +74,7 @@ class SSH(QThread):
             #os.system('')
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
         read_whitelist()
-        self.OutWhistlist.emit(1)
+        self.OutWhitelist.emit('True')
         return
 
 # 一键搭建线程命令
@@ -113,7 +114,7 @@ class Build(QThread):
             self.consoleOutPut.emit('使用默认下载地址')
             self.OutProgress.emit(20)
             try:
-                with open('build-shell\\build-debian10.sh','r') as command:
+                with open('build-shell\\test','r') as command:
     	            command_all = command.read().splitlines()
                 self.consoleOutPut.emit(sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command_all))
             except:
@@ -234,11 +235,11 @@ class Whitelist(QThread):
     def __init__(self, parent=None):
         super(Whitelist, self).__init__(parent)
         self.controling = True
-        self._whitelist_list = []
     def __del__(self):
         self.controling = False
         # self.wait()
     def run(self):
+        self._whitelist_list = []
         for self._whitelist in open('Snap/whitelist.txt'):
             self._whitelist_singal = []
             self._whitelist = self._whitelist.replace('\n', '').replace('\r', '')
@@ -260,7 +261,36 @@ class Whitelist(QThread):
             self._whitelist_list.append(self._whitelist_singal)
         
         self.OutWhitelist.emit(self._whitelist_list)
-            
+class WhitelistAdd(QThread):
+    OutProgress = pyqtSignal(int)
+    OutPut = pyqtSignal(str)
+    OutWhitelist = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super(WhitelistAdd, self).__init__(parent)
+        self.controling = True
+    def __del__(self):
+        self.controling = False
+        # self.wait()
+    def run(self):
+        user = config.get("Server", "add_user")
+        add_whitelist(user)
+        self.OutWhitelist.emit('True')
+class WhitelistDel(QThread):
+    OutProgress = pyqtSignal(int)
+    OutPut = pyqtSignal(str)
+    OutWhitelist = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super(WhitelistDel, self).__init__(parent)
+        self.controling = True
+    def __del__(self):
+        self.controling = False
+        # self.wait()
+    def run(self):
+        user = config.get("Server", "del_user")
+        del_whitelist(user)
+        self.OutWhitelist.emit('True')
 
 # 界面操作
 class Minecraft:
@@ -269,15 +299,27 @@ class Minecraft:
 
         # 白名单管理
         self.Whitelist_QThread = Whitelist()
+        self.Whitelist_Add_QThread = WhitelistAdd()
+        self.Whitelist_Del_QThread = WhitelistDel()
         self.ui.whitelist_list.setColumnCount(3)
+        self.ui.whitelist_list.setRowCount(100)
         self.ui.whitelist_list.setHorizontalHeaderLabels(['ID','xuid','忽略玩家计数'])
-        self.ui.whitelist_list.clicked.connect(self.Whitelist_Add)
+        self.ui.whitelist_list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.ui.whitelist_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.whitelist_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) 
+        self.ui.whitelist_add_edit.setEnabled(False)
+        self.ui.whitelist_add_button.setEnabled(False)
+        self.ui.whitelist_del_button.setEnabled(False)
+        self.ui.whitelist_list.itemClicked.connect(self.Whitelist_Click)
+        self.ui.whitelist_add_button.clicked.connect(self.Whitelist_Add)
+        self.ui.whitelist_del_button.clicked.connect(self.Whitelist_Del)
         self.Whitelist_QThread.OutWhitelist.connect(self.Whitelist_Show)
-        self.ui.whitelist_list.setItem(row, 0, QTableWidgetItem("测试"))
-
+        self.Whitelist_Add_QThread.OutWhitelist.connect(self.SSH_Whitelist)
+        self.Whitelist_Del_QThread.OutWhitelist.connect(self.SSH_Whitelist)
 
         # 关于标签页
         self.ui.about_vcheck_button.clicked.connect(self.CheckVersion)
+
         # 一键开服标签页
         self.Build_QThread = Build()
         self.ui.build_build_button.clicked.connect(self.Build_Start)
@@ -290,7 +332,7 @@ class Minecraft:
         self.SSH_QThread.OutPut.connect(self.SSH_Show)
         self.SSH_QThread.OutProgress.connect(self.ProgressBar)
         self.SSH_QThread.OutConsole.connect(self.Console)
-        self.SSH_QThread.OutWhistlist.connect(self.SSH_Whitelist)
+        self.SSH_QThread.OutWhitelist.connect(self.SSH_Whitelist)
 
         # 服务器控制
         self.Control_QThread = Control()
@@ -341,7 +383,10 @@ class Minecraft:
         self.ui.Password_edit.setEnabled(True)
 
     def SSH_Whitelist(self,start):
-        if start == 1:
+        if start == 'True':
+            self.ui.whitelist_add_edit.setEnabled(True)
+            self.ui.whitelist_add_button.setEnabled(True)
+            self.ui.whitelist_del_button.setEnabled(True)
             self.Whitelist_QThread.start()
     # 一键开服信号与界面逻辑
     def Build_Start(self):
@@ -430,23 +475,55 @@ class Minecraft:
 
     # 白名单管理信号与界面逻辑
     def Whitelist_Add(self):
-        config.set("Server", "add_user", str(self.ui.whitelist_add_edit.text()))
-    def Whitelist_Show(self, whitelist):
+        self.ui.whitelist_add_edit.setEnabled(False)
+        self.ui.whitelist_add_button.setEnabled(False)
+        self.ui.whitelist_del_button.setEnabled(False)
+        if str(self.ui.whitelist_add_edit.text()) == '':
+            self.ui.whitelist_add_button.setText('未输入！')
+            self.ui.whitelist_add_edit.setEnabled(True)
+            self.ui.whitelist_add_button.setEnabled(True)
+            self.ui.whitelist_del_button.setEnabled(True)
+            return
         
+        config.set("Server", "add_user", str(self.ui.whitelist_add_edit.text()))
+        self.ui.whitelist_add_edit.setEnabled(True)
+        self.ui.whitelist_add_button.setEnabled(True)
+        self.ui.whitelist_del_button.setEnabled(True)
+        self.Whitelist_Add_QThread.start()
+    def Whitelist_Del(self):
+        self.ui.whitelist_add_edit.setEnabled(False)
+        self.ui.whitelist_add_button.setEnabled(False)
+        self.ui.whitelist_del_button.setEnabled(False)
+        if str(self.ui.whitelist_add_edit.text()) == '':
+            self.ui.whitelist_add_button.setText('未输入！')
+            self.ui.whitelist_add_edit.setEnabled(True)
+            self.ui.whitelist_add_button.setEnabled(True)
+            self.ui.whitelist_del_button.setEnabled(True)
+            return
+        
+        config.set("Server", "del_user", str(self.ui.whitelist_add_edit.text()))
+        self.ui.whitelist_add_edit.setEnabled(True)
+        self.ui.whitelist_add_button.setEnabled(True)
+        self.ui.whitelist_del_button.setEnabled(True)
+        self.Whitelist_Del_QThread.start()
+    def Whitelist_Show(self, whitelist):
+        self.ui.whitelist_list.clearContents()
+        self.column_number = 0
         for i in range(0,len(whitelist)):
             self.white_user = []
             self.white_user.append(whitelist[i][0])
             self.white_user.append(whitelist[i][1])
             self.white_user.append(whitelist[i][2])
             self.line_number = 0
-            self.column_number = 0
             for j in self.white_user:
-                print(j)
-                newItem = QTableWidgetItem(j)
-                self.ui.whitelist_list.setItem(self.line_number, self.column_number, newItem)
-                self.line_number += 1
-            self.column_number += 1
+                newItem = QTableWidgetItem(str(j))
+                self.ui.whitelist_list.setItem(self.line_number, self.column_number,newItem)
+                self.column_number += 1
+            self.line_number += 1
             #self.ui.whitelist_list.append(whitelist[i])
+        write_whitelist()
+    def Whitelist_Click(self):
+        print('Clicked')
     # 进度条显示
     def ProgressBar(self, progress_int):
         self.ui.progressBar.setValue(progress_int)

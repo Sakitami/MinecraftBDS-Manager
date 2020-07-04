@@ -1,5 +1,6 @@
 import json
 import os
+import linecache
 
 def read_whitelist():
     nono = 0
@@ -62,7 +63,6 @@ def write_whitelist():
         temp_dict['ignoresPlayerLimit'] = ignoresPlayerLimit_id
         temp_dict['name'] = white_name
         temp_dict['xuid'] = xuid
-        print(temp_dict)
         result.append(temp_dict)
         #print(result)
 
@@ -84,8 +84,36 @@ def add_whitelist(name, ignore='false', xuid=' '):
     with open('Snap/whitelist.txt', 'a') as f:
         f.write('\n' + name + ';' + xuid + ';' + ignore)
 
+def del_whitelist(name):
+    name = str(name)
+    with open('Snap\whitelist.txt','r') as r:
+        lines=r.readlines()
+    with open('Snap\whitelist.txt','w') as w:
+        for l in lines:
+            if name not in l:
+                w.write(l)
+    # 删除空行
+    count = len(open('Snap\whitelist.txt', 'r').readlines())
+    print(count)
+    file1 = open('Snap\whitelist.txt', 'r', encoding='utf-8') 
+    file2 = open('Snap\whitelist2.txt', 'w', encoding='utf-8')
+    try:
+        for line in file1.readlines():
+            if line == '\n':
+                line = line.strip("\n")
+            file2.write(line)
+    finally:
+        file1.close()
+        file2.close()
+        os.remove('Snap\whitelist.txt')
+        os.rename('Snap\whitelist2.txt','Snap\whitelist.txt')
+
 if __name__ == "__main__":
-    read_whitelist()
+    pass
+    #del_whitelist('Dameng23333')
+    #write_whitelist()
+    #read_whitelist()
+    #add_whitelist('Eltrac')
     #if read_whitelist() == False:
     #    print('空列表')
     #else:
