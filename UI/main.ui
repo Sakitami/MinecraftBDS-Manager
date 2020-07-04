@@ -734,7 +734,7 @@
       <string>添加</string>
      </property>
     </widget>
-    <widget class="QListWidget" name="whitelist_list">
+    <widget class="QTableWidget" name="whitelist_list">
      <property name="geometry">
       <rect>
        <x>-10</x>
