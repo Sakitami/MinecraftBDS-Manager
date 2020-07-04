@@ -259,7 +259,7 @@ class Whitelist(QThread):
             self._whitelist_singal.append(self.xuid)
             self._whitelist_singal.append(self.ignoresPlayerLimit_id)
             self._whitelist_list.append(self._whitelist_singal)
-        
+        write_whitelist()
         self.OutWhitelist.emit(self._whitelist_list)
 class WhitelistAdd(QThread):
     OutProgress = pyqtSignal(int)
@@ -521,7 +521,7 @@ class Minecraft:
                 self.column_number += 1
             self.line_number += 1
             #self.ui.whitelist_list.append(whitelist[i])
-        write_whitelist()
+        # write_whitelist()
     def Whitelist_Click(self):
         print('Clicked')
     # 进度条显示
