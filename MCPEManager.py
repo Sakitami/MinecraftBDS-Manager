@@ -82,7 +82,7 @@ class SSH(QThread):
             shutil.copy('Server/whitelist.json', 'Server_Download/whitelist.json')
         try:
             sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
-        else:
+        except:
             shutil.copy('Server/permissions.json', 'Server_Download/permissions.json')
         sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
         read_whitelist()
