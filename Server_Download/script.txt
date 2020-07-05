@@ -1,0 +1,8 @@
+antiXray.js
+attackParticle.js
+bossbar.js
+chatCMD.js
+customScb.js
+fun.js
+mobReward.js
+playerJoin.js

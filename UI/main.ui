@@ -464,7 +464,7 @@
       <rect>
        <x>530</x>
        <y>280</y>
-       <width>101</width>
+       <width>91</width>
        <height>71</height>
       </rect>
      </property>
@@ -646,6 +646,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="log_startserver_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>430</x>
@@ -659,6 +662,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="log_stopserver_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>530</x>
@@ -677,6 +683,9 @@
      <string>白名单管理</string>
     </attribute>
     <widget class="QLineEdit" name="whitelist_add_edit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -693,6 +702,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="whitelist_del_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>530</x>
@@ -706,6 +718,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="whitelist_add_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>430</x>
@@ -737,12 +752,15 @@
      <string>插件管理</string>
     </attribute>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>0</x>
        <y>0</y>
        <width>641</width>
-       <height>391</height>
+       <height>401</height>
       </rect>
      </property>
      <property name="layoutDirection">
@@ -772,6 +790,9 @@
        </property>
       </widget>
       <widget class="QLineEdit" name="plugin_js_upload_edit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -788,6 +809,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_js_set_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>430</x>
@@ -801,6 +825,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_js_del_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>530</x>
@@ -814,6 +841,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_js_upload_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>330</x>
@@ -832,6 +862,9 @@
        <string>Dll插件</string>
       </attribute>
       <widget class="QPushButton" name="plugin_dll_set_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>430</x>
@@ -845,6 +878,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_dll_del_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>530</x>
@@ -871,6 +907,9 @@
        </property>
       </widget>
       <widget class="QLineEdit" name="plugin_dll_upload_edit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -887,6 +926,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_dll_upload_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>330</x>
@@ -905,6 +947,9 @@
        <string>Dll插件(EZ)</string>
       </attribute>
       <widget class="QPushButton" name="plugin_ez_save_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>530</x>
@@ -916,6 +961,268 @@
        <property name="text">
         <string>保存</string>
        </property>
+      </widget>
+      <widget class="QGroupBox" name="custom_setting_group">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>631</width>
+         <height>311</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>custom.yaml</string>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>611</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QCheckBox" name="checkBox_7">
+             <property name="text">
+              <string>Audit</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_6">
+             <property name="text">
+              <string>BasicAntiCheat</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_8">
+             <property name="text">
+              <string>Blacklist</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_9">
+             <property name="text">
+              <string>BossBarSupport</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_10">
+             <property name="text">
+              <string>Bus</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QCheckBox" name="checkBox">
+             <property name="text">
+              <string>ChatAPI</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_2">
+             <property name="text">
+              <string>CommandSupport</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_3">
+             <property name="text">
+              <string>CrashHandler</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_4">
+             <property name="text">
+              <string>CustomScoreboard</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_5">
+             <property name="text">
+              <string>DebugTool</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QCheckBox" name="checkBox_11">
+             <property name="text">
+              <string>DynamicMotd</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_12">
+             <property name="text">
+              <string>Economy</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_13">
+             <property name="text">
+              <string>Essentials</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_14">
+             <property name="text">
+              <string>Experimental</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_15">
+             <property name="text">
+              <string>FlatWorld</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QCheckBox" name="checkBox_16">
+             <property name="text">
+              <string>NetworkStatus</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_17">
+             <property name="text">
+              <string>NoEncryption</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_18">
+             <property name="text">
+              <string>NullPlayerData</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_19">
+             <property name="text">
+              <string>PacketDumper</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_20">
+             <property name="text">
+              <string>ScriptingSupport</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <widget class="QCheckBox" name="checkBox_21">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>SignCommand</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_22">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>SpawnProtection</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="horizontalLayoutWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>344</x>
+          <y>270</y>
+          <width>281</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>打开文件</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>开启EZ插件</string>
+           </property>
+           <property name="autoRepeat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="acceptDrops">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>关闭EZ插件</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </widget>
      <widget class="QWidget" name="tab_5">
@@ -936,6 +1243,9 @@
        </property>
       </widget>
       <widget class="QLineEdit" name="plugin_script_upload_edit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -952,6 +1262,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_script_del_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>530</x>
@@ -965,6 +1278,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_script_set_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>430</x>
@@ -978,6 +1294,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="plugin_script_upload_button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>330</x>
@@ -998,6 +1317,9 @@
      <string>插件仓库</string>
     </attribute>
     <widget class="QLineEdit" name="pluginstore_ori_edit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1014,6 +1336,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="pluginstore_install_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>530</x>
@@ -1027,6 +1352,9 @@
      </property>
     </widget>
     <widget class="QPushButton" name="pluginstore_switch_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>430</x>
@@ -1399,6 +1727,12 @@ p, li { white-space: pre-wrap; }
     </item>
     <item>
      <widget class="QProgressBar" name="progressBar">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="mouseTracking">
+       <bool>false</bool>
+      </property>
       <property name="value">
        <number>0</number>
       </property>

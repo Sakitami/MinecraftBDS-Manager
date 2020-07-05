@@ -1,0 +1,3 @@
+js_plugin1;This is an introduction for plugin1.;否
+js_plugin2;This is an introduction for plugin2.;是
+js_plugin3;This is an introduction for plugin3.;否

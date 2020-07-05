@@ -65,8 +65,37 @@ def sshsend(ip, port, usern, passwod, file, local):
     trans.close()
     return True
 
-# sshsend('192.168.3.213', 22, 'pi', 'raspberry', 'https://unlock.skihome.xyz/subscription/build-debian10.sh', '/home/pi/BDX/local.py')
+# 下载文件函数
+def sshget(ip, port, usern, passwod, file):
+    trans = paramiko.Transport((ip, port))
+    try:
+        trans.connect(username=usern, password=passwod)
+    except:
+        pass
+    sftp = paramiko.SFTPClient.from_transport(trans)
+    try:
+        download_list = sftp.listdir(file)
+        print(download_list)
+        print('开始下载'+ file +'文件夹中的文件')
+        for i in download_list:
+            print('开始下载 ' + i)
+            download_singal = file + '/' + i
+            download_local = 'Server_Download/' + i
+            sftp.get(download_singal, download_local)
+    except:
+        print('开始下载文件：' + file)
+        download_local = 'Server_Download/' + file.rpartition('/')[2]
+        try:
+            sftp.get(file, download_local)
+        except:
+            return False
+    trans.close()
 
-#with open('build-shell\\test.sh','r') as command:
-#    command_all = command.read().splitlines()
-#print(sshconnect('192.168.3.213', 22, 'pi', 'raspberry', command_all))
+if __name__ == "__main__":
+    pass
+    #sshget('192.168.3.213', 22, 'pi', 'raspberry', '/home/pi/skihome.xyzerjdo')
+    #sshsend('192.168.3.213', 22, 'pi', 'raspberry', 'https://unlock.skihome.xyz/subscription/build-debian10.sh', '/home/pi/BDX/local.py')
+
+    #with open('build-shell\\test.sh','r') as command:
+    #    command_all = command.read().splitlines()
+    #print(sshconnect('192.168.3.213', 22, 'pi', 'raspberry', command_all))

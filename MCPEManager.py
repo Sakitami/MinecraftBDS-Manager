@@ -15,7 +15,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableWidgetItem, QAbstractItemView, QHeaderView
 
-from sshconnect import sshconnect, sshsend
+from sshconnect import sshconnect, sshsend, sshget
 
 from whitelist import read_whitelist, write_whitelist, add_whitelist, del_whitelist
 
@@ -33,6 +33,7 @@ class SSH(QThread):
     OutProgress = pyqtSignal(int)
     OutConsole = pyqtSignal(str)
     OutWhitelist = pyqtSignal(str)
+    OutPlugin = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(SSH, self).__init__(parent)
@@ -66,15 +67,19 @@ class SSH(QThread):
         print(check)
         self.OutConsole.emit(check)
         if check.find("screen") == True:
-            self.OutConsole.emit(' \n没有检测到服务端进程！')
+            self.OutConsole.emit('没有检测到服务端进程！')
             return
         else:
             print('ok')
             #command = 'scp -r '+ SSH_User+'@'+''
             #os.system('')
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
+        #sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
+        #sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
+        #sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
         read_whitelist()
         self.OutWhitelist.emit('True')
+        self.OutPlugin.emit('True')
         return
 
 # 一键搭建线程命令
@@ -292,6 +297,38 @@ class WhitelistDel(QThread):
         del_whitelist(user)
         self.OutWhitelist.emit('True')
 
+# 插件管理线程命令
+class PluginJs(QThread):
+    OutProgress = pyqtSignal(int)
+    OutPut = pyqtSignal(str)
+    OutPluginJs = pyqtSignal(list)
+
+    def __init__(self, parent=None):
+        super(PluginJs, self).__init__(parent)
+        self.controling = True
+    def __del__(self):
+        self.controling = False
+        # self.wait()
+    def run(self):
+        self._plugin_js_list = []
+        for self._plugin_js in open('Server_Download/js_plugin.txt',encoding='utf-8'):
+            self._plugin_js_singal = []
+            self._plugin_js = self._plugin_js.replace('\n', '').replace('\r', '')
+            self.plugin_js_introduction = ''
+            self.plugin_js_name = self._plugin_js.partition(';')[0]
+            self.plugin_js_enable = self._plugin_js.rpartition(';')[2]
+            self._plugin_js_singal.append(self.plugin_js_name)
+            self.del_name_id = self._plugin_js.find(';')
+            self.del_ignore_id = self._plugin_js.rfind(';')
+            for i in range(0,len(self._plugin_js)):
+                if i > self.del_name_id and i < self.del_ignore_id:
+                    self.plugin_js_introduction = self.plugin_js_introduction + self._plugin_js[i]
+            self._plugin_js_singal.append(self.plugin_js_introduction)
+            self._plugin_js_singal.append(self.plugin_js_enable)
+            self._plugin_js_list.append(self._plugin_js_singal)
+        #write_whitelist()
+        self.OutPluginJs.emit(self._plugin_js_list)
+
 # 界面操作
 class Minecraft:
     def __init__(self,parent=None):
@@ -307,9 +344,9 @@ class Minecraft:
         self.ui.whitelist_list.setSelectionMode(QAbstractItemView.SingleSelection)
         self.ui.whitelist_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ui.whitelist_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) 
-        self.ui.whitelist_add_edit.setEnabled(False)
-        self.ui.whitelist_add_button.setEnabled(False)
-        self.ui.whitelist_del_button.setEnabled(False)
+        #self.ui.whitelist_add_edit.setEnabled(False)
+        #self.ui.whitelist_add_button.setEnabled(False)
+        #self.ui.whitelist_del_button.setEnabled(False)
         self.ui.whitelist_list.itemClicked.connect(self.Whitelist_Click)
         self.ui.whitelist_add_button.clicked.connect(self.Whitelist_Add)
         self.ui.whitelist_del_button.clicked.connect(self.Whitelist_Del)
@@ -333,13 +370,35 @@ class Minecraft:
         self.SSH_QThread.OutProgress.connect(self.ProgressBar)
         self.SSH_QThread.OutConsole.connect(self.Console)
         self.SSH_QThread.OutWhitelist.connect(self.SSH_Whitelist)
+        self.SSH_QThread.OutPlugin.connect(self.SSH_Plugin_Js)
 
         # 服务器控制
         self.Control_QThread = Control()
         self.ui.control_save.clicked.connect(self.Control_Start)
         self.Control_QThread.OutProgress.connect(self.ProgressBar)
-        self.Control_QThread.OutPut.connect(self.Control_button_show)
+        self.Control_QThread.OutPut.connect(self.Control_button_Show)
 
+        # 插件管理
+        self.Plugin_JS_QThread = PluginJs()
+        self.ui.plugin_js_list.setColumnCount(3)
+        self.ui.plugin_js_list.setHorizontalHeaderLabels(['插件','简介','是否启用'])
+        self.ui.plugin_js_list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.ui.plugin_js_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.plugin_js_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.plugin_js_list.setRowCount(100)
+        self.ui.plugin_dll_list.setColumnCount(3)
+        self.ui.plugin_dll_list.setHorizontalHeaderLabels(['插件','简介','是否启用'])
+        self.ui.plugin_dll_list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.ui.plugin_dll_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.plugin_dll_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.plugin_dll_list.setRowCount(100)
+        self.ui.plugin_script_list.setColumnCount(3)
+        self.ui.plugin_script_list.setHorizontalHeaderLabels(['插件','简介','是否启用'])
+        self.ui.plugin_script_list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.ui.plugin_script_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.plugin_script_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.plugin_script_list.setRowCount(100)
+        self.Plugin_JS_QThread.OutPluginJs.connect(self.Plugin_Js_Show)
     # 关于页面相关控件
     def CheckVersion(self):
         webbrowser.open("https://github.com/Sakitami/MinecraftBDS-Manager/releases", new=0, autoraise=True)
@@ -388,6 +447,9 @@ class Minecraft:
             self.ui.whitelist_add_button.setEnabled(True)
             self.ui.whitelist_del_button.setEnabled(True)
             self.Whitelist_QThread.start()
+    def SSH_Plugin_Js(self,start):
+        if start == 'True':
+            self.Plugin_JS_QThread.start()
     # 一键开服信号与界面逻辑
     def Build_Start(self):
         self.ui.build_build_button.setText('执行中')
@@ -453,7 +515,7 @@ class Minecraft:
             config.write(open("config.cfg", "w"))
             self.ui.progressBar.setValue(10)
             self.Control_QThread.start()
-    def Control_button_show(self, text):
+    def Control_button_Show(self, text):
         self.ui.control_save.setText(text)
         self.ui.control_servername_edit.setEnabled(True)
         self.ui.control_save.setEnabled(True)
@@ -524,6 +586,24 @@ class Minecraft:
         # write_whitelist()
     def Whitelist_Click(self):
         print('Clicked')
+
+    # 插件管理信号与界面逻辑
+    def Plugin_Js_Add(self):
+        pass
+    def Plugin_Js_Show(self, plugin_js_list):
+        self.ui.plugin_js_list.clearContents()
+        self.column_number = 0
+        for i in range(0,len(plugin_js_list)):
+            self.white_user = []
+            self.white_user.append(plugin_js_list[i][0])
+            self.white_user.append(plugin_js_list[i][1])
+            self.white_user.append(plugin_js_list[i][2])
+            self.line_number = 0
+            for j in self.white_user:
+                newItem = QTableWidgetItem(str(j))
+                self.ui.plugin_js_list.setItem(self.line_number, self.column_number,newItem)
+                self.column_number += 1
+            self.line_number += 1
     # 进度条显示
     def ProgressBar(self, progress_int):
         self.ui.progressBar.setValue(progress_int)
@@ -538,3 +618,4 @@ if __name__ == '__main__':
     minecraft = Minecraft()
     minecraft.ui.show()
     add.exec_()
+    os.remove('config.cfg')
