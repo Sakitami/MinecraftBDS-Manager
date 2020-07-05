@@ -1,0 +1,14 @@
+[
+    {
+       "permission" : "operator",
+       "xuid" : "1234567890"
+    },
+    {
+       "permission" : "operator",
+       "xuid" : "12345678900"
+    },
+    {
+       "permission" : "operator",
+       "xuid" : "123456789000"
+    }
+ ]

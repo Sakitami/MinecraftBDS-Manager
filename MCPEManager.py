@@ -74,9 +74,9 @@ class SSH(QThread):
             #command = 'scp -r '+ SSH_User+'@'+''
             #os.system('')
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
-        #sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
-        #sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
-        #sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
         read_whitelist()
         self.OutWhitelist.emit('True')
         self.OutPlugin.emit('True')
@@ -182,7 +182,7 @@ class Control(QThread):
         shutil.copy('Server/server.properties.cfg', 'Snap/server.properties2.cfg')
 
         SSH_IP = config.get("SSH", "server_ip")
-        SSH_Port = config.get("SSH", "server_port")
+        SSH_Port = config.getint("SSH", "server_port")
         SSH_User = config.get("SSH", "server_user")
         SSH_Password = config.get("SSH", "server_pass")
 
@@ -218,7 +218,8 @@ class Control(QThread):
         f.close()
         try:
             sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'server.properties', '/root/EZ/server.properties')
-            self.OutProgress.emit(80)
+            self.OutPut.emit('保存成功！')
+            self.OutProgress.emit(100)
         except:
             self.OutPut.emit('保存失败！')
             self.OutProgress.emit(0)
@@ -245,6 +246,10 @@ class Whitelist(QThread):
         # self.wait()
     def run(self):
         self._whitelist_list = []
+        SSH_IP = config.get("SSH", "server_ip")
+        SSH_Port = config.getint("SSH", "server_port")
+        SSH_User = config.get("SSH", "server_user")
+        SSH_Password = config.get("SSH", "server_pass")
         for self._whitelist in open('Snap/whitelist.txt'):
             self._whitelist_singal = []
             self._whitelist = self._whitelist.replace('\n', '').replace('\r', '')
@@ -266,6 +271,7 @@ class Whitelist(QThread):
             self._whitelist_list.append(self._whitelist_singal)
         write_whitelist()
         self.OutWhitelist.emit(self._whitelist_list)
+        sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'Snap/whitelist.json', '/root/EZ/whitelist.json')
 class WhitelistAdd(QThread):
     OutProgress = pyqtSignal(int)
     OutPut = pyqtSignal(str)
@@ -619,3 +625,13 @@ if __name__ == '__main__':
     minecraft.ui.show()
     add.exec_()
     os.remove('config.cfg')
+    if os.listdir('Snap') != []:
+        remove = os.listdir('Snap')
+        print(remove)
+        for i in remove:
+            os.remove('Snap/'+i)
+    if os.listdir('Server_Download') != []:
+        remove = os.listdir('Server_Download')
+        print(remove)
+        for j in remove:
+            os.remove('Server_Download/'+j)
