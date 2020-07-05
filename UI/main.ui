@@ -1483,7 +1483,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="text">
-       <string>版本：Alpha v0.1-G40e7e4d</string>
+       <string>版本：Alpha v0.1-Gb0727ce</string>
       </property>
      </widget>
      <widget class="QPushButton" name="about_vcheck_button">
