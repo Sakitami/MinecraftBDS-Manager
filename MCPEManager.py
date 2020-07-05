@@ -76,15 +76,20 @@ class SSH(QThread):
             #command = 'scp -r '+ SSH_User+'@'+''
             #os.system('')
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
-        try:
-            sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
-        except:
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
+        if os.path.getsize('Server_Download/whitelist.json'):
+            pass
+        else:
             shutil.copy('Server/whitelist.json', 'Server_Download/whitelist.json')
-        try:
-            sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
-        except:
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
+        if os.path.getsize('Server_Download/permissions.json'):
+            pass
+        else:
             shutil.copy('Server/permissions.json', 'Server_Download/permissions.json')
         sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
+        if os.path.exists('Server_Download\settings') == True:
+            os.remove('Server_Download\settings')
+            shutil.copyfile('Server\js_plugin.txt', 'Server_Download\js_plugin.txt')
         read_whitelist()
         self.OutWhitelist.emit('True')
         self.OutPlugin.emit('True')
@@ -279,7 +284,10 @@ class Whitelist(QThread):
             self._whitelist_list.append(self._whitelist_singal)
         write_whitelist()
         self.OutWhitelist.emit(self._whitelist_list)
-        sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'Snap/whitelist.json', '/root/EZ/whitelist.json')
+        try:
+            sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'Snap/whitelist.json', '/root/EZ/whitelist.json')
+        except:
+            pass
 class WhitelistAdd(QThread):
     OutProgress = pyqtSignal(int)
     OutPut = pyqtSignal(str)
