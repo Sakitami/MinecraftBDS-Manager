@@ -5,20 +5,22 @@
                 Then I'll thank you for your suggestions.
 """
 import configparser
-import re
-import webbrowser
+import ctypes
 import os
+import re
 import shutil
 import time
+import webbrowser
 
 from PyQt5 import uic
 from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableWidgetItem, QAbstractItemView, QHeaderView
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView,
+                             QMainWindow, QMessageBox, QTableWidgetItem)
 
-from sshconnect import sshconnect, sshsend, sshget
-
-from whitelist import read_whitelist, write_whitelist, add_whitelist, del_whitelist
-
+from sshconnect import sshconnect, sshget, sshsend
+from whitelist import (add_whitelist, del_whitelist, read_whitelist,
+                       write_whitelist)
 
 # 读取配置数据
 shutil.copy('config_template.cfg', 'config.cfg')
@@ -74,8 +76,14 @@ class SSH(QThread):
             #command = 'scp -r '+ SSH_User+'@'+''
             #os.system('')
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
-        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
-        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
+        try:
+            sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
+        except:
+            shutil.copy('Server/whitelist.json', 'Server_Download/whitelist.json')
+        try:
+            sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
+        else:
+            shutil.copy('Server/permissions.json', 'Server_Download/permissions.json')
         sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
         read_whitelist()
         self.OutWhitelist.emit('True')
@@ -339,6 +347,8 @@ class PluginJs(QThread):
 class Minecraft:
     def __init__(self,parent=None):
         self.ui = uic.loadUi('UI/main.ui')
+        self.ui.setWindowIcon(QIcon('MCPEManager.ico'))
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
         # 白名单管理
         self.Whitelist_QThread = Whitelist()
@@ -625,6 +635,10 @@ if __name__ == '__main__':
     minecraft.ui.show()
     add.exec_()
     os.remove('config.cfg')
+    try:
+        os.remove('server.properties')
+    except:
+        pass
     if os.listdir('Snap') != []:
         remove = os.listdir('Snap')
         print(remove)
