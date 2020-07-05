@@ -1382,162 +1382,6 @@
     <attribute name="title">
      <string>关于</string>
     </attribute>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>611</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>软件设置</string>
-     </property>
-     <widget class="QLabel" name="label_28">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>40</y>
-        <width>91</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>版本：v1.0</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_13">
-      <property name="geometry">
-       <rect>
-        <x>90</x>
-        <y>40</y>
-        <width>88</width>
-        <height>34</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>检查更新</string>
-      </property>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>611</width>
-        <height>91</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>软件设置</string>
-      </property>
-      <widget class="QLabel" name="label_29">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>40</y>
-         <width>91</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>版本：v1.0</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_14">
-       <property name="geometry">
-        <rect>
-         <x>90</x>
-         <y>40</y>
-         <width>88</width>
-         <height>34</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>检查更新</string>
-       </property>
-      </widget>
-      <widget class="QGroupBox" name="groupBox_3">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>611</width>
-         <height>91</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>软件设置</string>
-       </property>
-       <widget class="QLabel" name="label_30">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>40</y>
-          <width>91</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>版本：v1.0</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_15">
-        <property name="geometry">
-         <rect>
-          <x>90</x>
-          <y>40</y>
-          <width>88</width>
-          <height>34</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>检查更新</string>
-        </property>
-       </widget>
-       <widget class="QGroupBox" name="about_software_group">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>611</width>
-          <height>91</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>软件设置</string>
-        </property>
-        <widget class="QLabel" name="about_software_title">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>40</y>
-           <width>91</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>版本：v1.0</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="about_vcheck_button">
-         <property name="geometry">
-          <rect>
-           <x>90</x>
-           <y>40</y>
-           <width>88</width>
-           <height>34</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>检查更新</string>
-         </property>
-        </widget>
-       </widget>
-      </widget>
-     </widget>
-    </widget>
     <widget class="QGroupBox" name="about_thanks_group">
      <property name="geometry">
       <rect>
@@ -1616,6 +1460,45 @@ p, li { white-space: pre-wrap; }
      </widget>
      <zorder>about_about</zorder>
      <zorder>about_qt_button</zorder>
+    </widget>
+    <widget class="QGroupBox" name="about_software_group">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>611</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>软件设置</string>
+     </property>
+     <widget class="QLabel" name="about_software_title">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>171</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>版本：Alpha v0.1-G15aaf05</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="about_vcheck_button">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>50</y>
+        <width>88</width>
+        <height>34</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>检查更新</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
