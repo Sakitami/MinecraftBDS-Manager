@@ -59,7 +59,7 @@ class SSH(QThread):
             self.OutPut.emit('连接成功')
             self.OutProgress.emit(100)
             self.connecting = False
-        elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == 'Failed':
+        elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == False:
             self.OutPut.emit('连接失败')
             self.OutProgress.emit(0)
             self.connecting = False
@@ -121,7 +121,7 @@ class Build(QThread):
             self.OutProgress.emit(17)
             # time.sleep(4)
 
-        elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == 'Failed':
+        elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == False:
             self.consoleOutPut.emit('SSH连接失败！')
             return
         download_url = config.get("Server", "download_user")
@@ -132,11 +132,20 @@ class Build(QThread):
             self.consoleOutPut.emit('使用默认下载地址')
             self.OutProgress.emit(20)
             try:
-                with open('build-shell\\test','r') as command:
+                with open('build-shell\\build-debian10.sh','r') as command:
     	            command_all = command.read().splitlines()
-                self.consoleOutPut.emit(sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command_all))
+                self.OutProgress.emit(50)
+                progress = 50
+                for i in command_all:
+                    commands = []
+                    commands.append(i)
+                    self.consoleOutPut.emit(sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, commands))
+                    progress += 2
+                    self.OutProgress.emit(progress)
             except:
                 self.consoleOutPut.emit("上传失败！")
+            self.OutProgress.emit(100)
+            self.consoleOutPut.emit('开服成功！')
             return
 
         # 本地上传

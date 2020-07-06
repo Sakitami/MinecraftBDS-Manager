@@ -1,37 +1,82 @@
 import os
 import paramiko
 import requests
+from gevent.socket import wait_read
+from paramiko import SSHClient, AutoAddPolicy
+
+
+class MySSHClient(SSHClient):
+
+
+    def _forward_bound(self, channel, callback, *args):
+        try:
+            while True:
+                wait_read(channel.fileno())
+                data = channel.recv(1024)
+                if not len(data):
+                    return
+                callback(data, *args)
+        finally:
+            self.close()
+
+
+    def run(self, command, callback, *args):
+        stdin, stdout, stderr = self.exec_command(
+            command, get_pty=True
+        )
+        self._forward_bound(stdout.channel, callback, *args)
+
+        return stdin, stdout, stderr
 
 
 # SSH连接函数
-def sshconnect(ip, port, usern, passwod, command=[]):
-    try:
-        trans = paramiko.Transport((ip, port))
-    except:
-        return 'Failed'
-    try:
-        trans.connect(username=usern, password=passwod)
-    except:
-        return 'Failed'
-    ssh = paramiko.SSHClient()
-    ssh._transport = trans 
-    if not command == []:
-        print(command[0])
-        command_all = 'clear;'
-        for i in command:
-            command_temp = i + ' ;'
-            command_all = command_all + command_temp
-        print(command_all)
-
+def sshconnect(ip, port, usern, passwod, command=None):
+    global texxt2
+    texxt2 = ''
+    def console(text):
+        global texxt2
+        #print(text)
+        texxt = str(text,encoding='utf-8')
+        texxt2 = texxt
+        print(texxt2)
+    ssh = MySSHClient()
+    ssh.set_missing_host_key_policy(AutoAddPolicy())
+    ssh.connect(ip, port, usern, passwod)
+    #ssh.connect(ip, port, usern, passwod)
+    #try:
+    #    trans = paramiko.Transport((ip, port))
+    #except:
+    #    return 'Failed'
+    #try:
+    #    trans.connect(username=usern, password=passwod)
+    #except:
+    #    return 'Failed'
+    #ssh = paramiko.SSHClient()
+    #ssh._transport = trans 
+    if not command == '':
+        #command_all = 'clear;'
+        #for i in command:
+        #    command_temp = i + ' ;'
+        #    command_all = command_all + command_temp
+        #print(command_all)
         try:
-            stdin, stdout, stderr = ssh.exec_command(command_all,get_pty=True)
-            return stdout.read().decode()
-
+            stdin, stdout, stderr = ssh.run(i,console)
+            #print(texxt2)
+            #console = str(console,encoding='utf-8')
+            #print(stdout)
+            #stdin, stdout, stderr = ssh.exec_command(i,get_pty=True)
+                #print(stdout.read().decode())
+            #return stdout.read().decode()
+            #bytess = stderr.channel.recv_exit_status()
+            #print(bytess)
+            #str(bytess,encoding='utf-8')
+            return texxt2
         except:
             print('执行失败！')
-        trans.close()
+        ssh.close()
+        return False
     else:
-        trans.close()
+        ssh.close()
         return True
 
 # 发送文件函数
@@ -92,10 +137,14 @@ def sshget(ip, port, usern, passwod, file):
     trans.close()
 
 if __name__ == "__main__":
-    pass
     #sshget('192.168.3.213', 22, 'pi', 'raspberry', '/home/pi/skihome.xyzerjdo')
-    #sshsend('192.168.3.213', 22, 'pi', 'raspberry', 'https://unlock.skihome.xyz/subscription/build-debian10.sh', '/home/pi/BDX/local.py')
+    #sshsend('139.180.157.211', 22, 'root', 'HWs0712IloveU', r'C:\Users\harri\Desktop\EZMG\EZMG\development_resource_packs.zip', '/root/EZ/linuxbedrock.zip')
 
     #with open('build-shell\\test.sh','r') as command:
     #    command_all = command.read().splitlines()
     #print(sshconnect('192.168.3.213', 22, 'pi', 'raspberry', command_all))
+    commands = ['ls','ls -all','lsblk']
+    #sshconnect('139.180.157.211', 22, 'root', 'HWs0712IloveU', commands)
+    for i in commands:
+        sshconnect('139.180.157.211', 22, 'root', 'HWs0712IloveU',i)
+            #print(text)
