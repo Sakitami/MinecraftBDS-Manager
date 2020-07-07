@@ -10,4 +10,3 @@ cd wine-5.12; ./configure --enable-win64 --without-freetype; make; make install
 mkdir EZ; cd /root/EZ/; wget https://github.com/Sakitami/MinecraftBDS-Manager/blob/master/Server/linuxbedrock-1.14.60.zip
 cd EZ; unzip *.zip; rm -rf *.zip
 apt install -y screen
-screen -R EZ; wine64 EZ.bat

@@ -64,15 +64,14 @@ class SSH(QThread):
             self.OutProgress.emit(0)
             self.connecting = False
             return
-        command = ['screen -r EZ']
-        check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
-        print(check)
-        self.OutConsole.emit(check)
-        if check.find("screen") == True:
-            self.OutConsole.emit('没有检测到服务端进程！')
-            return
-        else:
-            print('ok')
+        #command = 'screen -r EZ'
+        #check = sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, command)
+        #self.OutConsole.emit(check)
+        #if check.find("screen") == True:
+        #    self.OutConsole.emit('没有检测到服务端进程！')
+        #    return
+        #else:
+        #    print('ok')
             #command = 'scp -r '+ SSH_User+'@'+''
             #os.system('')
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
@@ -99,6 +98,7 @@ class SSH(QThread):
 class Build(QThread):
     consoleOutPut = pyqtSignal(str)
     OutProgress = pyqtSignal(int)
+    consoleOutPut_All = pyqtSignal(bool)
     
     def __init__(self, parent=None):
         super(Build, self).__init__(parent)
@@ -135,15 +135,16 @@ class Build(QThread):
                 with open('build-shell\\build-debian10.sh','r') as command:
     	            command_all = command.read().splitlines()
                 self.OutProgress.emit(50)
-                progress = 50
+                progress = 40
                 for i in command_all:
-                    commands = []
-                    commands.append(i)
-                    self.consoleOutPut.emit(sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, commands))
-                    progress += 2
+                    #commands = []
+                    #commands.append(i)
+                    seof.consoleOutPut_All.emit(True)
+                    self.consoleOutPut.emit(sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,'build_log.txt',i))
+                    progress += 5
                     self.OutProgress.emit(progress)
             except:
-                self.consoleOutPut.emit("上传失败！")
+                self.consoleOutPut.emit("开服失败！")
             self.OutProgress.emit(100)
             self.consoleOutPut.emit('开服成功！')
             return
@@ -168,6 +169,55 @@ class Build(QThread):
             except:
                 self.consoleOutPut.emit("上传失败！")
             return
+class Build_Check(QThread):
+    consoleOutPut = pyqtSignal(str)
+    OutProgress = pyqtSignal(int)
+    
+    def __init__(self, parent=None):
+        super(Build_Check, self).__init__(parent)
+        self.building = True
+    def __del__(self):
+        self.building = False
+        # self.wait()
+    def run(self):
+        time.sleep(1)
+        while os.path.exists('Snap/build_log.txt') == True:
+            self.consoleOutPut.emit(True)
+            time.sleep(5)
+# 日志监控线程命令
+class Log(QThread):
+    consoleOutPut = pyqtSignal(bool)
+    OutProgress = pyqtSignal(int)
+    
+    def __init__(self, parent=None):
+        super(Log, self).__init__(parent)
+        self.building = True
+    def __del__(self):
+        self.building = False
+        # self.wait()
+    def run(self):
+        SSH_IP = config.get("SSH", "server_ip")
+        SSH_Port = config.get("SSH", "server_port")
+        SSH_User = config.get("SSH", "server_user")
+        SSH_Password = config.get("SSH", "server_pass")
+        SCREEN_Id = config.get("EZ","screen_id")
+        consoleOutPut = True
+        sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'log.txt', 'screen -D -r '+ SCREEN_Id)
+class Log_Check(QThread):
+    consoleOutPut = pyqtSignal(bool)
+    OutProgress = pyqtSignal(int)
+    
+    def __init__(self, parent=None):
+        super(Log_Check, self).__init__(parent)
+        self.building = True
+    def __del__(self):
+        self.building = False
+        # self.wait()
+    def run(self):
+        time.sleep(1)
+        while os.path.exists('Snap/log.txt') == True:
+            self.consoleOutPut.emit(True)
+            time.sleep(5)
 
 # 服务器控制线程命令
 class Control(QThread):
@@ -367,6 +417,9 @@ class Minecraft:
         self.ui.setWindowIcon(QIcon('MCPEManager.ico'))
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
+        self.ui.pushButton_2.clicked.connect(self.shoow)
+        self.ui.pushButton_3.clicked.connect(self.clear)
+
         # 白名单管理
         self.Whitelist_QThread = Whitelist()
         self.Whitelist_Add_QThread = WhitelistAdd()
@@ -392,9 +445,19 @@ class Minecraft:
 
         # 一键开服标签页
         self.Build_QThread = Build()
+        self.Build_Check_QThread = Build_Check()
         self.ui.build_build_button.clicked.connect(self.Build_Start)
+        self.Build_QThread.consoleOutPut_All.connect(self.Build_Check)
         self.Build_QThread.consoleOutPut.connect(self.Build_Console_Show)
         self.Build_QThread.OutProgress.connect(self.ProgressBar)
+        self.Build_Check_QThread.consoleOutPut.connect(self.Build_Console_All_Show)
+
+        # 日志监控标签页
+        self.Log_QThread = Log()
+        self.Log_Check_QThread = Log_Check()
+        self.ui.log_startlog_button.clicked.connect(self.Log_Start)
+        self.Log_QThread.consoleOutPut.connect(self.Log_Check)
+        self.Log_Check_QThread.consoleOutPut.connect(self.Log_Show)
 
         # SSH连接
         self.SSH_QThread = SSH()
@@ -483,6 +546,20 @@ class Minecraft:
     def SSH_Plugin_Js(self,start):
         if start == 'True':
             self.Plugin_JS_QThread.start()
+
+    # 日志监控信号与界面逻辑
+    def Log_Start(self):
+        self.Log_QThread.start()
+    def Log_Check(self,check):
+        if check == True:
+            self.Log_Check_QThread.start()
+    def Log_Show(self,check):
+        if check == True:
+            self.ui.log_log_text.clear()
+            with open('Snap/log.txt','r')as f:
+                f = f.read()
+                self.ui.log_log_text.append(f)
+
     # 一键开服信号与界面逻辑
     def Build_Start(self):
         self.ui.build_build_button.setText('执行中')
@@ -495,6 +572,9 @@ class Minecraft:
         config.set("Server", "local", download_user)
         config.write(open("config.cfg", "w")) 
         self.Build_QThread.start()
+    def Build_Check(self,check):
+        if check == True:
+            self.Build_Check_QThread.start()
     def Build_Console_Show(self, console_txt):
         if console_txt == 'SSH连接失败！':
             self.ui.build_build_button.setText('开服')
@@ -505,7 +585,12 @@ class Minecraft:
             self.ui.progressBar.reset()
             self.ui.build_build_button.setEnabled(True)
         self.ui.build_log_text.append(console_txt)
-
+    def Build_Console_All_Show(self,check):
+        if check == True:
+            self.ui.log_log_text.clear()
+            with open('Snap/build_log.txt','r')as f:
+                f = f.read()
+                self.ui.build_log_text.append(f)        
     # 服务器控制信号与界面逻辑
     def Control_Start(self):
         if config.getint('SSH', 'connected') == 0:
@@ -644,6 +729,13 @@ class Minecraft:
     # 控制台显示
     def Console(self, text):
         self.ui.log_log_text.append(text)
+
+    def shoow(self):
+        with open('Snap/log.txt','r')as f:
+            f = f.read()
+            self.ui.log_log_text.append(f)
+    def clear(self):
+        self.ui.log_log_text.clear()
 
 
 if __name__ == '__main__':

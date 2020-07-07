@@ -4,7 +4,6 @@ import requests
 from gevent.socket import wait_read
 from paramiko import SSHClient, AutoAddPolicy
 
-
 class MySSHClient(SSHClient):
 
 
@@ -30,15 +29,28 @@ class MySSHClient(SSHClient):
 
 
 # SSH连接函数
-def sshconnect(ip, port, usern, passwod, command=None):
-    global texxt2
-    texxt2 = ''
+def sshconnect(ip, port, usern, passwod, log=None, command=None):
     def console(text):
-        global texxt2
         #print(text)
         texxt = str(text,encoding='utf-8')
-        texxt2 = texxt
-        print(texxt2)
+        print(texxt)
+        with open('Snap/' + log, 'a') as f:
+            f.write(texxt)
+        # 删除空行
+        count = len(open('Snap/' + log, 'r').readlines())
+        file1 = open('Snap/' + log, 'r', encoding='utf-8') 
+        file2 = open('Snap/2' + log, 'w', encoding='utf-8')
+        try:
+            for line in file1.readlines():
+                if line == '\n':
+                    line = line.strip("\n")
+                file2.write(line)
+        finally:
+            file1.close()
+            file2.close()
+            os.remove('Snap/' + log)
+            os.rename('Snap/2' + log,'Snap/' + log)
+            f.close()
     ssh = MySSHClient()
     ssh.set_missing_host_key_policy(AutoAddPolicy())
     ssh.connect(ip, port, usern, passwod)
@@ -53,7 +65,7 @@ def sshconnect(ip, port, usern, passwod, command=None):
     #    return 'Failed'
     #ssh = paramiko.SSHClient()
     #ssh._transport = trans 
-    if not command == '':
+    if not command == None:
         #command_all = 'clear;'
         #for i in command:
         #    command_temp = i + ' ;'
@@ -61,7 +73,8 @@ def sshconnect(ip, port, usern, passwod, command=None):
         #print(command_all)
         try:
             stdin, stdout, stderr = ssh.run(i,console)
-            #print(texxt2)
+        #texxt232 = str(console,encoding='utf-8')
+        #print(texxt232)
             #console = str(console,encoding='utf-8')
             #print(stdout)
             #stdin, stdout, stderr = ssh.exec_command(i,get_pty=True)
@@ -70,11 +83,12 @@ def sshconnect(ip, port, usern, passwod, command=None):
             #bytess = stderr.channel.recv_exit_status()
             #print(bytess)
             #str(bytess,encoding='utf-8')
-            return texxt2
+            ssh.close()
+            return True
         except:
-            print('执行失败！')
-        ssh.close()
-        return False
+            print('Failed')
+            ssh.close()
+            return False
     else:
         ssh.close()
         return True
@@ -143,8 +157,8 @@ if __name__ == "__main__":
     #with open('build-shell\\test.sh','r') as command:
     #    command_all = command.read().splitlines()
     #print(sshconnect('192.168.3.213', 22, 'pi', 'raspberry', command_all))
-    commands = ['ls','ls -all','lsblk']
+    commands = ['screen -D -r EZ']
     #sshconnect('139.180.157.211', 22, 'root', 'HWs0712IloveU', commands)
     for i in commands:
-        sshconnect('139.180.157.211', 22, 'root', 'HWs0712IloveU',i)
+        sshconnect('139.180.157.211', 22, 'root', 'HWs0712IloveU','log.txt',i)
             #print(text)
