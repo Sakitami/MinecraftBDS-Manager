@@ -615,6 +615,9 @@
      </property>
     </widget>
     <widget class="QLineEdit" name="log_save_edit_2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -627,7 +630,7 @@
       <string/>
      </property>
      <property name="placeholderText">
-      <string>https://www.github.com/Sakitami/BDX/1.14.60.tar.gz</string>
+      <string>暂不支持自定义下载/上传地址</string>
      </property>
     </widget>
    </widget>

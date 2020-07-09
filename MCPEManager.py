@@ -75,18 +75,21 @@ class SSH(QThread):
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
         sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
         if os.path.getsize('Server_Download/whitelist.json'):
-            pass
+            self.OutProgress.emit(85)
         else:
             shutil.copy('Server/whitelist.json', 'Server_Download/whitelist.json')
+            self.OutProgress.emit(85)
         sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
         if os.path.getsize('Server_Download/permissions.json'):
-            pass
+            self.OutProgress.emit(90)
         else:
             shutil.copy('Server/permissions.json', 'Server_Download/permissions.json')
+            self.OutProgress.emit(90)
         sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
         if os.path.exists('Server_Download\settings') == True:
             os.remove('Server_Download\settings')
             shutil.copyfile('Server\js_plugin.txt', 'Server_Download\js_plugin.txt')
+        self.OutProgress.emit(95)
         read_whitelist()
         self.OutWhitelist.emit('True')
         self.OutPlugin.emit('True')
@@ -98,6 +101,7 @@ class Build(QThread):
     consoleOutPut = pyqtSignal(str)
     OutProgress = pyqtSignal(int)
     consoleOutPut_All = pyqtSignal(bool)
+    stopcheck = pyqtSignal(bool)
     
     def __init__(self, parent=None):
         super(Build, self).__init__(parent)
@@ -131,17 +135,17 @@ class Build(QThread):
             self.consoleOutPut.emit('使用默认下载地址')
             self.OutProgress.emit(20)
             try:
-                with open('build-shell\\build-debian10.sh','r') as command:
+                with open('build-shell\\test.sh','r') as command:
     	            command_all = command.read().splitlines()
                 self.OutProgress.emit(50)
                 progress = 40
+                if os.path.exists('Snap/build_log.txt'):
+                    pass
+                else:
+                    log_txt = open('Snap/build_log.txt','w')
+                    log_txt.close()
+                    self.consoleOutPut_All.emit(True)
                 for i in command_all:
-                    if os.path.exists('Snap/build_log.txt'):
-                        pass
-                    else:
-                        log_txt = open('Snap/build_log.txt','w')
-                        log_txt.close()
-                    seof.consoleOutPut_All.emit(True)
                     sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,'build_log.txt',i)
                     progress += 5
                     self.OutProgress.emit(progress)
@@ -149,7 +153,8 @@ class Build(QThread):
                 self.consoleOutPut.emit("开服失败！")
                 return
             self.OutProgress.emit(100)
-            self.consoleOutPut.emit('开服成功！')
+            self.consoleOutPut.emit('开服成功！执行日志已保存在Log文件夹中，关闭软件则会被删除。')
+            self.stopcheck.emit(True)
             return
 
         # 本地上传
@@ -177,6 +182,7 @@ class Build(QThread):
                     progress += 4
                     self.OutProgress.emit(progress)
                 self.consoleOutPut.emit('开服成功！')
+
                 return
             except:
                 self.consoleOutPut.emit("上传失败！")
@@ -192,7 +198,7 @@ class Build(QThread):
                 self.consoleOutPut.emit("上传失败！")
             return
 class Build_Check(QThread):
-    consoleOutPut = pyqtSignal(str)
+    consoleOutPut = pyqtSignal(bool)
     OutProgress = pyqtSignal(int)
     
     def __init__(self, parent=None):
@@ -202,7 +208,7 @@ class Build_Check(QThread):
         self.building = False
         # self.wait()
     def run(self):
-        while True:
+        while os.path.exists('Snap/build_log.txt'):
             time.sleep(1)
             self.consoleOutPut.emit(True)
             time.sleep(3)
@@ -243,7 +249,7 @@ class Log_Check(QThread):
         self.building = False
         # self.wait()
     def run(self):
-        while True:
+        while os.path.exists('Snap/build_log.txt'):
             time.sleep(1)
             self.consoleOutPut.emit(True)
             time.sleep(3)
@@ -476,6 +482,7 @@ class Minecraft:
         self.Build_QThread.consoleOutPut_All.connect(self.Build_Check)
         self.Build_QThread.consoleOutPut.connect(self.Build_Console_Show)
         self.Build_QThread.OutProgress.connect(self.ProgressBar)
+        self.Build_QThread.stopcheck.connect(self.Build_Check_Stop)
         self.Build_Check_QThread.consoleOutPut.connect(self.Build_Console_All_Show)
 
         # 日志监控标签页
@@ -606,6 +613,13 @@ class Minecraft:
     def Build_Check(self,check):
         if check == True:
             self.Build_Check_QThread.start()
+    def Build_Check_Stop(self,check):
+        shutil.copy('Snap/build_log.txt', 'Log/build_log.txt')
+        os.remove('Snap/build_log.txt')
+        self.Build_Check_QThread.quit()
+        self.ui.build_build_button.setText('开服')
+        self.ui.build_build_button.setEnabled(True)
+
     def Build_Console_Show(self, console_txt):
         if console_txt == 'SSH连接失败！':
             self.ui.build_build_button.setText('开服')
@@ -618,7 +632,7 @@ class Minecraft:
         self.ui.build_log_text.append(console_txt)
     def Build_Console_All_Show(self,check):
         if check == True:
-            self.ui.log_log_text.clear()
+            self.ui.build_log_text.clear()
             with open('Snap/build_log.txt','r')as f:
                 f = f.read()
                 self.ui.build_log_text.append(f)        
@@ -761,13 +775,6 @@ class Minecraft:
     def Console(self, text):
         self.ui.log_log_text.append(text)
 
-    def shoow(self):
-        with open('Snap/log.txt','r')as f:
-            f = f.read()
-            self.ui.log_log_text.append(f)
-    def clear(self):
-        self.ui.log_log_text.clear()
-
 
 if __name__ == '__main__':
     add = QApplication([])
@@ -789,3 +796,8 @@ if __name__ == '__main__':
         print(remove)
         for j in remove:
             os.remove('Server_Download/'+j)
+    if os.listdir('Log') != []:
+        remove = os.listdir('Log')
+        print(remove)
+        for k in remove:
+            os.remove('Log/'+k)

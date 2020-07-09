@@ -1,3 +1,0 @@
-screenfetch
-ls
-ls -all
