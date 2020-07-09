@@ -135,9 +135,9 @@ class Build(QThread):
             self.consoleOutPut.emit('使用默认下载地址')
             self.OutProgress.emit(20)
             try:
-                with open('build-shell\\test.sh','r') as command:
+                with open('build-shell\\build-debian10.sh','r') as command:
     	            command_all = command.read().splitlines()
-                self.OutProgress.emit(50)
+                self.OutProgress.emit(40)
                 progress = 40
                 if os.path.exists('Snap/build_log.txt'):
                     pass
@@ -249,7 +249,7 @@ class Log_Check(QThread):
         self.building = False
         # self.wait()
     def run(self):
-        while os.path.exists('Snap/build_log.txt'):
+        while os.path.exists('Snap/log.txt'):
             time.sleep(1)
             self.consoleOutPut.emit(True)
             time.sleep(3)
