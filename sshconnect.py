@@ -150,6 +150,19 @@ def sshget(ip, port, usern, passwod, file):
             return False
     trans.close()
 
+# 获取文件夹列表函数
+def sshdirlist(ip, port, usern, passwod, dirname):
+    trans = paramiko.Transport((ip, port))
+    try:
+        trans.connect(username=usern, password=passwod)
+    except:
+        pass
+    sftp = paramiko.SFTPClient.from_transport(trans)
+    try:
+        dir_list = sftp.listdir(dirname)
+        return dir_list
+    except:
+        return []
 if __name__ == "__main__":
     #sshget('192.168.3.213', 22, 'pi', 'raspberry', '/home/pi/skihome.xyzerjdo')
     #sshsend('139.180.157.211', 22, 'root', 'HWs0712IloveU', r'C:\Users\harri\Desktop\EZMG\EZMG\development_resource_packs.zip', '/root/EZ/linuxbedrock.zip')

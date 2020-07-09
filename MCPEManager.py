@@ -18,7 +18,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView,
                              QMainWindow, QMessageBox, QTableWidgetItem)
 
-from sshconnect import sshconnect, sshget, sshsend
+from sshconnect import sshconnect, sshget, sshsend, sshdirlist
 from whitelist import (add_whitelist, del_whitelist, read_whitelist,
                        write_whitelist)
 
@@ -414,7 +414,7 @@ class WhitelistDel(QThread):
         self.OutWhitelist.emit('True')
 
 # 插件管理线程命令
-class PluginJs(QThread):
+class Plugin(QThread):
     OutProgress = pyqtSignal(int)
     OutPut = pyqtSignal(str)
     OutPluginJs = pyqtSignal(list)
@@ -426,24 +426,30 @@ class PluginJs(QThread):
         self.controling = False
         # self.wait()
     def run(self):
-        self._plugin_js_list = []
-        for self._plugin_js in open('Server_Download/js_plugin.txt',encoding='utf-8'):
-            self._plugin_js_singal = []
-            self._plugin_js = self._plugin_js.replace('\n', '').replace('\r', '')
-            self.plugin_js_introduction = ''
-            self.plugin_js_name = self._plugin_js.partition(';')[0]
-            self.plugin_js_enable = self._plugin_js.rpartition(';')[2]
-            self._plugin_js_singal.append(self.plugin_js_name)
-            self.del_name_id = self._plugin_js.find(';')
-            self.del_ignore_id = self._plugin_js.rfind(';')
-            for i in range(0,len(self._plugin_js)):
-                if i > self.del_name_id and i < self.del_ignore_id:
-                    self.plugin_js_introduction = self.plugin_js_introduction + self._plugin_js[i]
-            self._plugin_js_singal.append(self.plugin_js_introduction)
-            self._plugin_js_singal.append(self.plugin_js_enable)
-            self._plugin_js_list.append(self._plugin_js_singal)
-        #write_whitelist()
-        self.OutPluginJs.emit(self._plugin_js_list)
+        SSH_IP = config.get("SSH", "server_ip")
+        SSH_Port = config.getint("SSH", "server_port")
+        SSH_User = config.get("SSH", "server_user")
+        SSH_Password = config.get("SSH", "server_pass")
+        dll_list = sshdirlist(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/Mods')
+    #def run(self):
+    #    self._plugin_js_list = []
+    #    for self._plugin_js in open('Server_Download/js_plugin.txt',encoding='utf-8'):
+    #        self._plugin_js_singal = []
+    #        self._plugin_js = self._plugin_js.replace('\n', '').replace('\r', '')
+    #        self.plugin_js_introduction = ''
+    #        self.plugin_js_name = self._plugin_js.partition(';')[0]
+    #        self.plugin_js_enable = self._plugin_js.rpartition(';')[2]
+    #        self._plugin_js_singal.append(self.plugin_js_name)
+    #        self.del_name_id = self._plugin_js.find(';')
+    #        self.del_ignore_id = self._plugin_js.rfind(';')
+    #        for i in range(0,len(self._plugin_js)):
+    #            if i > self.del_name_id and i < self.del_ignore_id:
+    #                self.plugin_js_introduction = self.plugin_js_introduction + self._plugin_js[i]
+    #        self._plugin_js_singal.append(self.plugin_js_introduction)
+    #        self._plugin_js_singal.append(self.plugin_js_enable)
+    #        self._plugin_js_list.append(self._plugin_js_singal)
+    #    #write_whitelist()
+    #    self.OutPluginJs.emit(self._plugin_js_list)
 
 # 界面操作
 class Minecraft:
@@ -509,11 +515,6 @@ class Minecraft:
 
         # 插件管理
         self.Plugin_JS_QThread = PluginJs()
-        self.ui.plugin_js_list.setColumnCount(3)
-        self.ui.plugin_js_list.setHorizontalHeaderLabels(['插件','简介','是否启用'])
-        self.ui.plugin_js_list.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.ui.plugin_js_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.ui.plugin_js_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.plugin_js_list.setRowCount(100)
         self.ui.plugin_dll_list.setColumnCount(3)
         self.ui.plugin_dll_list.setHorizontalHeaderLabels(['插件','简介','是否启用'])
@@ -573,7 +574,6 @@ class Minecraft:
             self.ui.User_edit.setEnabled(True)
             self.ui.Password_edit.setEnabled(True)
         
-
     def SSH_Whitelist(self,start):
         if start == 'True':
             self.ui.whitelist_add_edit.setEnabled(True)
@@ -751,22 +751,22 @@ class Minecraft:
         print('Clicked')
 
     # 插件管理信号与界面逻辑
-    def Plugin_Js_Add(self):
-        pass
-    def Plugin_Js_Show(self, plugin_js_list):
-        self.ui.plugin_js_list.clearContents()
-        self.column_number = 0
-        for i in range(0,len(plugin_js_list)):
-            self.white_user = []
-            self.white_user.append(plugin_js_list[i][0])
-            self.white_user.append(plugin_js_list[i][1])
-            self.white_user.append(plugin_js_list[i][2])
-            self.line_number = 0
-            for j in self.white_user:
-                newItem = QTableWidgetItem(str(j))
-                self.ui.plugin_js_list.setItem(self.line_number, self.column_number,newItem)
-                self.column_number += 1
-            self.line_number += 1
+    #def Plugin_Js_Add(self):
+    #    pass
+    #def Plugin_Js_Show(self, plugin_js_list):
+    #    self.ui.plugin_js_list.clearContents()
+    #    self.column_number = 0
+    #    for i in range(0,len(plugin_js_list)):
+    #        self.white_user = []
+    #        self.white_user.append(plugin_js_list[i][0])
+    #        self.white_user.append(plugin_js_list[i][1])
+    #        self.white_user.append(plugin_js_list[i][2])
+    #        self.line_number = 0
+    #        for j in self.white_user:
+    #            newItem = QTableWidgetItem(str(j))
+    #            self.ui.plugin_js_list.setItem(self.line_number, self.column_number,newItem)
+    #            self.column_number += 1
+    #        self.line_number += 1
     # 进度条显示
     def ProgressBar(self, progress_int):
         self.ui.progressBar.setValue(progress_int)
