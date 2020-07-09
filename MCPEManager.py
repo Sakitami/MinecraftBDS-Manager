@@ -56,12 +56,10 @@ class SSH(QThread):
             self.connecting = False
             return
         if sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == True:
-            self.OutPut.emit('连接成功')
-            self.OutProgress.emit(100)
+            self.OutPut.emit('正在处理...')
             self.connecting = False
         elif sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password) == False:
             self.OutPut.emit('连接失败')
-            self.OutProgress.emit(0)
             self.connecting = False
             return
         #command = 'screen -r EZ'
@@ -92,6 +90,7 @@ class SSH(QThread):
         read_whitelist()
         self.OutWhitelist.emit('True')
         self.OutPlugin.emit('True')
+        self.OutPut.emit('连接成功')
         return
 
 # 一键搭建线程命令
@@ -137,14 +136,18 @@ class Build(QThread):
                 self.OutProgress.emit(50)
                 progress = 40
                 for i in command_all:
-                    #commands = []
-                    #commands.append(i)
+                    if os.path.exists('Snap/build_log.txt'):
+                        pass
+                    else:
+                        log_txt = open('Snap/build_log.txt','w')
+                        log_txt.close()
                     seof.consoleOutPut_All.emit(True)
-                    self.consoleOutPut.emit(sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,'build_log.txt',i))
+                    sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,'build_log.txt',i)
                     progress += 5
                     self.OutProgress.emit(progress)
             except:
                 self.consoleOutPut.emit("开服失败！")
+                return
             self.OutProgress.emit(100)
             self.consoleOutPut.emit('开服成功！')
             return
@@ -154,11 +157,30 @@ class Build(QThread):
             self.consoleOutPut.emit('从本地 \'' + download_url + ' \'获取服务端')
             #time.sleep(5)
             self.OutProgress.emit(20)
+            if not download_url.endswith(('zip')):
+                self.consoleOutPut.emit('上传的文件不是zip格式，无法上传！')
+                return
             try:
                 sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, download_url, '/root/EZ/local.zip')
+                with open('build-shell\\build-debian10-local.sh','r') as command:
+    	            command_all = command.read().splitlines()
+                self.OutProgress.emit(56)
+                progress = 56
+                for i in command_all:
+                    if os.path.exists('Snap/build_log.txt'):
+                        pass
+                    else:
+                        log_txt = open('Snap/build_log.txt','w')
+                        log_txt.close()
+                    seof.consoleOutPut_All.emit(True)
+                    sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,'build_log.txt',i)
+                    progress += 4
+                    self.OutProgress.emit(progress)
+                self.consoleOutPut.emit('开服成功！')
+                return
             except:
                 self.consoleOutPut.emit("上传失败！")
-            return
+                return
 
         # 使用用户自定义下载地址
         elif download_url.startswith(('http', 'https', 'ftp')) == True:
@@ -180,10 +202,10 @@ class Build_Check(QThread):
         self.building = False
         # self.wait()
     def run(self):
-        time.sleep(1)
-        while os.path.exists('Snap/build_log.txt') == True:
+        while True:
+            time.sleep(1)
             self.consoleOutPut.emit(True)
-            time.sleep(5)
+            time.sleep(3)
 # 日志监控线程命令
 class Log(QThread):
     consoleOutPut = pyqtSignal(bool)
@@ -528,19 +550,22 @@ class Minecraft:
         self.SSH_QThread.start()
     def SSH_Show(self, button_show):
         self.ui.Connect_button.setText(button_show)
-        if button_show == '连接成功':
+        if button_show == '正在处理...':
+            self.ui.progressBar.setValue(80)
+        elif button_show == '连接成功':
             self.ui.progressBar.setValue(100)
             config.set("SSH", "connected", '1')
             config.write(open("config.cfg", "w"))
-            #self.SSH_QThread.stop
+            self.ui.log_startlog_button.setEnabled(True)
             return
-        self.ui.progressBar.reset()
-        self.ui.Connect_button.setEnabled(True)
-        self.ui.IP_edit.setEnabled(True)
-        self.ui.Port_edit.setEnabled(True)
-        self.ui.User_edit.setEnabled(True)
-        self.ui.Password_edit.setEnabled(True)
-        self.ui.log_startlog_button.setEnabled(True)
+        else:
+            self.ui.progressBar.reset()
+            self.ui.Connect_button.setEnabled(True)
+            self.ui.IP_edit.setEnabled(True)
+            self.ui.Port_edit.setEnabled(True)
+            self.ui.User_edit.setEnabled(True)
+            self.ui.Password_edit.setEnabled(True)
+        
 
     def SSH_Whitelist(self,start):
         if start == 'True':
@@ -554,9 +579,11 @@ class Minecraft:
 
     # 日志监控信号与界面逻辑
     def Log_Start(self):
+        self.ui.log_startlog_button.setEnabled(False)
         self.Log_QThread.start()
     def Log_Check(self,check):
         if check == True:
+            self.ui.log_startlog_button.setText('已开启')
             self.Log_Check_QThread.start()
     def Log_Show(self,check):
         self.ui.log_log_text.clear()
