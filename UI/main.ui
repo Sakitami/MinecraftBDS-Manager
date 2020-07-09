@@ -677,35 +677,9 @@
       <string>关服</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>360</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>显示</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>360</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>删除</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="log_startlog_button">
      <property name="enabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -716,7 +690,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>开启/刷新日志</string>
+      <string>开启日志</string>
      </property>
     </widget>
    </widget>
@@ -812,7 +786,7 @@
       <bool>false</bool>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -1433,6 +1407,204 @@
      </property>
     </widget>
    </widget>
+   <widget class="QWidget" name="tab_6">
+    <attribute name="title">
+     <string>设置</string>
+    </attribute>
+    <widget class="QGroupBox" name="setting_server_group">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>611</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>服务端设置</string>
+     </property>
+     <widget class="QWidget" name="verticalLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>571</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Screen名称(EZ)：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>EZ</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>服务端位置：    </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>/root/EZ</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>611</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>软件设置</string>
+     </property>
+     <widget class="QWidget" name="horizontalLayoutWidget_6">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>221</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>语言：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox">
+         <item>
+          <property name="text">
+           <string>简体中文</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_7">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>60</y>
+        <width>221</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>日志刷新间隔：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_2">
+         <item>
+          <property name="text">
+           <string>5秒</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>3秒</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4秒</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>6秒</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>7秒</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>8秒</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>9秒</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>10秒</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="setting_save_button">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>340</y>
+       <width>91</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存</string>
+     </property>
+    </widget>
+   </widget>
    <widget class="QWidget" name="about">
     <attribute name="title">
      <string>关于</string>
@@ -1510,7 +1682,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;捐赠(我很可爱，请给我钱)：&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://blog.skihome.xyz&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt; text-decoration: underline; color:#2980b9;&quot;&gt;https://blog.skihome.xyz&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt;&quot;&gt;项目地址：&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://www.github.com/Sakitami&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt; text-decoration: underline; color:#2980b9;&quot;&gt;https://www.github.com/Sakitami&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://www.github.com/Sakitami&quot;&gt;&lt;span style=&quot; font-family:'Noto Sans'; font-size:10pt; text-decoration: underline; color:#2980b9;&quot;&gt;https://www.github.com/Sakitami/MinecraftBDS-Manager&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <zorder>about_about</zorder>

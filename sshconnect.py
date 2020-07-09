@@ -72,7 +72,7 @@ def sshconnect(ip, port, usern, passwod, log=None, command=None):
         #    command_all = command_all + command_temp
         #print(command_all)
         try:
-            stdin, stdout, stderr = ssh.run(i,console)
+            stdin, stdout, stderr = ssh.run(command,console)
         #texxt232 = str(console,encoding='utf-8')
         #print(texxt232)
             #console = str(console,encoding='utf-8')

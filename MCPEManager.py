@@ -201,8 +201,15 @@ class Log(QThread):
         SSH_User = config.get("SSH", "server_user")
         SSH_Password = config.get("SSH", "server_pass")
         SCREEN_Id = config.get("EZ","screen_id")
-        consoleOutPut = True
-        sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'log.txt', 'screen -D -r '+ SCREEN_Id)
+        commandd = 'screen -D -r '+SCREEN_Id
+        print(commandd)
+        if os.path.exists('Snap/log.txt'):
+            pass
+        else:
+            log_txt = open('Snap/log.txt','w')
+            log_txt.close()
+        self.consoleOutPut.emit(True)
+        sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'log.txt', commandd)
 class Log_Check(QThread):
     consoleOutPut = pyqtSignal(bool)
     OutProgress = pyqtSignal(int)
@@ -214,10 +221,10 @@ class Log_Check(QThread):
         self.building = False
         # self.wait()
     def run(self):
-        time.sleep(1)
-        while os.path.exists('Snap/log.txt') == True:
+        while True:
+            time.sleep(1)
             self.consoleOutPut.emit(True)
-            time.sleep(5)
+            time.sleep(3)
 
 # 服务器控制线程命令
 class Control(QThread):
@@ -417,9 +424,6 @@ class Minecraft:
         self.ui.setWindowIcon(QIcon('MCPEManager.ico'))
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
-        self.ui.pushButton_2.clicked.connect(self.shoow)
-        self.ui.pushButton_3.clicked.connect(self.clear)
-
         # 白名单管理
         self.Whitelist_QThread = Whitelist()
         self.Whitelist_Add_QThread = WhitelistAdd()
@@ -536,6 +540,7 @@ class Minecraft:
         self.ui.Port_edit.setEnabled(True)
         self.ui.User_edit.setEnabled(True)
         self.ui.Password_edit.setEnabled(True)
+        self.ui.log_startlog_button.setEnabled(True)
 
     def SSH_Whitelist(self,start):
         if start == 'True':
@@ -554,11 +559,10 @@ class Minecraft:
         if check == True:
             self.Log_Check_QThread.start()
     def Log_Show(self,check):
-        if check == True:
-            self.ui.log_log_text.clear()
-            with open('Snap/log.txt','r')as f:
-                f = f.read()
-                self.ui.log_log_text.append(f)
+        self.ui.log_log_text.clear()
+        with open('Snap/log.txt','r')as f:
+            f = f.read()
+            self.ui.log_log_text.append(f)
 
     # 一键开服信号与界面逻辑
     def Build_Start(self):
