@@ -34,23 +34,27 @@ def sshconnect(ip, port, usern, passwod, log=None, command=None):
         #print(text)
         texxt = str(text,encoding='utf-8')
         print(texxt)
-        with open('Snap/' + log, 'a') as f:
-            f.write(texxt)
+        if command == 'cd wine-5.12; ./configure --enable-win64 --without-freetype; make; make install':
+        #if command = 'cd wine-5.12; ./configure --enable-win64 --without-freetype; make; make install':
+            pass
+        else:
+            with open('Snap/' + log, 'a') as f:
+                f.write(texxt)
         # 删除空行
-        count = len(open('Snap/' + log, 'r').readlines())
-        file1 = open('Snap/' + log, 'r', encoding='utf-8') 
-        file2 = open('Snap/2' + log, 'w', encoding='utf-8')
-        try:
-            for line in file1.readlines():
-                if line == '\n':
-                    line = line.strip("\n")
-                file2.write(line)
-        finally:
-            file1.close()
-            file2.close()
-            os.remove('Snap/' + log)
-            os.rename('Snap/2' + log,'Snap/' + log)
-            f.close()
+        #count = len(open('Snap/' + log, 'r').readlines())
+        #file1 = open('Snap/' + log, 'r', encoding='utf-8') 
+        #file2 = open('Snap/2' + log, 'w', encoding='utf-8')
+        #try:
+        #    for line in file1.readlines():
+        #        if line == '\n':
+        #            line = line.strip("\n")
+        #        file2.write(line)
+        #finally:
+        #    file1.close()
+        #    file2.close()
+        #    os.remove('Snap/' + log)
+        #    os.rename('Snap/2' + log,'Snap/' + log)
+        #    f.close()
     ssh = MySSHClient()
     ssh.set_missing_host_key_policy(AutoAddPolicy())
     ssh.connect(ip, port, usern, passwod)

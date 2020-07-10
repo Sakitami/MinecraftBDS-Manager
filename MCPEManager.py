@@ -92,8 +92,10 @@ class SSH(QThread):
             os.remove('Server_Download\settings')
             shutil.copyfile('Server\js_plugin.txt', 'Server_Download\js_plugin.txt')
         self.OutProgress.emit(95)
-        read_whitelist()
-        self.OutWhitelist.emit('True')
+        if read_whitelist() == True:
+            self.OutWhitelist.emit('True')
+        else:
+            shutil.copy('Server/whitelist.json', 'Server_Download/whitelist.json')
         self.OutPlugin.emit('True')
         self.OutPut.emit('连接成功')
         return
@@ -148,6 +150,8 @@ class Build(QThread):
                     log_txt.close()
                     self.consoleOutPut_All.emit(True)
                 for i in command_all:
+                    if i == 'cd wine-5.12; ./configure --enable-win64 --without-freetype; make; make install':
+                        self.consoleOutPut.emit('正在编译安装Wine，可能需要20-60分钟，具体时长因机器性能而异...')
                     sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,'build_log.txt',i)
                     progress += 5
                     self.OutProgress.emit(progress)
@@ -155,6 +159,7 @@ class Build(QThread):
                 self.consoleOutPut.emit("开服失败！")
                 return
             self.OutProgress.emit(100)
+            time.sleep(1)
             self.consoleOutPut.emit('开服成功！执行日志已保存在Log文件夹中，关闭软件则会被删除。')
             self.stopcheck.emit(True)
             return
@@ -486,6 +491,7 @@ class Minecraft:
         self.ui.whitelist_list.setHorizontalHeaderLabels(['ID','xuid','忽略玩家计数'])
         self.ui.whitelist_list.setSelectionMode(QAbstractItemView.SingleSelection)
         self.ui.whitelist_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.whitelist_list.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.ui.whitelist_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) 
         #self.ui.whitelist_add_edit.setEnabled(False)
         #self.ui.whitelist_add_button.setEnabled(False)
@@ -556,8 +562,10 @@ class Minecraft:
         self.ui.pluginstore_pstore_list.setColumnCount(5)
         self.ui.pluginstore_pstore_list.setHorizontalHeaderLabels(['插件名称','简介','类型','版本','更新日期'])
         self.ui.pluginstore_pstore_list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.ui.pluginstore_pstore_list.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.ui.pluginstore_pstore_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.Plugin_Repo_QThread.OutPluginlist.connect(self.Plugin_Repo_Show)
+        self.ui.pluginstore_install_button.clicked.connect(self.Plugin_Click)
         #self.ui.plugin_dll_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
     # 关于页面相关控件
     def CheckVersion(self):
@@ -606,6 +614,7 @@ class Minecraft:
             config.set("SSH", "connected", '1')
             config.write(open("config.cfg", "w"))
             self.ui.log_startlog_button.setEnabled(True)
+            self.ui.pluginstore_install_button.setEnabled(True)
             return
         else:
             self.ui.progressBar.reset()
@@ -788,8 +797,10 @@ class Minecraft:
             self.line_number += 1
             #self.ui.whitelist_list.append(whitelist[i])
         # write_whitelist()
-    def Whitelist_Click(self):
-        print('Clicked')
+    def Whitelist_Click(self,Item=None):
+        if Item==None:
+            return
+        self.ui.whitelist_add_edit.setText(Item.text())
 
     # 插件仓库信号与界面逻辑
     def Plugin_Repo_Show(self, pluginlist):
@@ -797,17 +808,23 @@ class Minecraft:
         self.column_number = 0
         for i in range(0,len(pluginlist)):
             self.plugin = []
-            self.plugin.append(pluginlist[i][0])
             self.plugin.append(pluginlist[i][1])
             self.plugin.append(pluginlist[i][2])
             self.plugin.append(pluginlist[i][3])
             self.plugin.append(pluginlist[i][4])
+            self.plugin.append(pluginlist[i][5])
             self.line_number = 0
             for j in self.plugin:
                 newItem = QTableWidgetItem(str(j))
                 self.ui.pluginstore_pstore_list.setItem(self.line_number, self.column_number,newItem)
                 self.column_number += 1
             self.line_number += 1
+    def Plugin_Click(self):
+        try:
+            id = self.ui.pluginstore_pstore_list.currentRow()
+            print(id)
+        except:
+            self.ui.pluginstore_install_button.setText('请选择')
     # 插件管理信号与界面逻辑
     #def Plugin_Js_Add(self):
     #    pass
