@@ -1399,7 +1399,7 @@
       <string>切换</string>
      </property>
     </widget>
-    <widget class="QListView" name="pluginstore_pstore_list">
+    <widget class="QTableWidget" name="pluginstore_pstore_list">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -1416,7 +1416,7 @@
     </attribute>
     <widget class="QGroupBox" name="setting_server_group">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -1443,6 +1443,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_10">
          <item>
           <widget class="QLabel" name="label_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Screen名称(EZ)：</string>
            </property>
@@ -1463,19 +1466,19 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="server_location_text">
            <property name="text">
             <string>服务端位置：    </string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="server_location_edit">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
-            <string>/root/EZ</string>
+            <string>/root/EZ/</string>
            </property>
           </widget>
          </item>
@@ -1593,7 +1596,7 @@
     </widget>
     <widget class="QPushButton" name="setting_save_button">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>

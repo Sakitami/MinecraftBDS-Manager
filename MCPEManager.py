@@ -18,9 +18,10 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView,
                              QMainWindow, QMessageBox, QTableWidgetItem)
 
-from sshconnect import sshconnect, sshget, sshsend, sshdirlist
+from sshconnect import sshconnect, sshdirlist, sshget, sshsend
 from whitelist import (add_whitelist, del_whitelist, read_whitelist,
                        write_whitelist)
+from plugin import Plugin_Depo_Read
 
 # 读取配置数据
 shutil.copy('config_template.cfg', 'config.cfg')
@@ -49,6 +50,7 @@ class SSH(QThread):
         SSH_Port = config.get("SSH", "server_port")
         SSH_User = config.get("SSH", "server_user")
         SSH_Password = config.get("SSH", "server_pass")
+        SERVER_Location = config.get("EZ", "server_location")
         try:
             SSH_Port = int(SSH_Port)
         except:
@@ -73,19 +75,19 @@ class SSH(QThread):
             #command = 'scp -r '+ SSH_User+'@'+''
             #os.system('')
             #sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password, '')
-        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/whitelist.json')
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, SERVER_Location+'whitelist.json')
         if os.path.getsize('Server_Download/whitelist.json'):
             self.OutProgress.emit(85)
         else:
             shutil.copy('Server/whitelist.json', 'Server_Download/whitelist.json')
             self.OutProgress.emit(85)
-        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/permissions.json')
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, SERVER_Location+'permissions.json')
         if os.path.getsize('Server_Download/permissions.json'):
             self.OutProgress.emit(90)
         else:
             shutil.copy('Server/permissions.json', 'Server_Download/permissions.json')
             self.OutProgress.emit(90)
-        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/settings')
+        sshget(SSH_IP, SSH_Port, SSH_User, SSH_Password, SERVER_Location+'settings')
         if os.path.exists('Server_Download\settings') == True:
             os.remove('Server_Download\settings')
             shutil.copyfile('Server\js_plugin.txt', 'Server_Download\js_plugin.txt')
@@ -292,6 +294,7 @@ class Control(QThread):
         SSH_Port = config.getint("SSH", "server_port")
         SSH_User = config.get("SSH", "server_user")
         SSH_Password = config.get("SSH", "server_pass")
+        SERVER_Location = config.get("EZ", "server_location")
 
         self.OutProgress.emit(50)
         config2 = configparser.ConfigParser()
@@ -324,7 +327,7 @@ class Control(QThread):
         open('server.properties', 'w').write(conf)
         f.close()
         try:
-            sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'server.properties', '/root/EZ/server.properties')
+            sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'server.properties', SERVER_Location+'server.properties')
             self.OutPut.emit('保存成功！')
             self.OutProgress.emit(100)
         except:
@@ -357,6 +360,7 @@ class Whitelist(QThread):
         SSH_Port = config.getint("SSH", "server_port")
         SSH_User = config.get("SSH", "server_user")
         SSH_Password = config.get("SSH", "server_pass")
+        SERVER_Location = config.get("EZ", "server_location")
         for self._whitelist in open('Snap/whitelist.txt'):
             self._whitelist_singal = []
             self._whitelist = self._whitelist.replace('\n', '').replace('\r', '')
@@ -379,7 +383,7 @@ class Whitelist(QThread):
         write_whitelist()
         self.OutWhitelist.emit(self._whitelist_list)
         try:
-            sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'Snap/whitelist.json', '/root/EZ/whitelist.json')
+            sshsend(SSH_IP, SSH_Port, SSH_User, SSH_Password, 'Snap/whitelist.json', SERVER_Location+'/whitelist.json')
         except:
             pass
 class WhitelistAdd(QThread):
@@ -430,7 +434,8 @@ class Plugin(QThread):
         SSH_Port = config.getint("SSH", "server_port")
         SSH_User = config.get("SSH", "server_user")
         SSH_Password = config.get("SSH", "server_pass")
-        dll_list = sshdirlist(SSH_IP, SSH_Port, SSH_User, SSH_Password, '/root/EZ/Mods')
+        SERVER_Location = config.get("EZ", "server_location")
+        dll_list = sshdirlist(SSH_IP, SSH_Port, SSH_User, SSH_Password, SERVER_Location+'Mods')
     #def run(self):
     #    self._plugin_js_list = []
     #    for self._plugin_js in open('Server_Download/js_plugin.txt',encoding='utf-8'):
@@ -450,6 +455,20 @@ class Plugin(QThread):
     #        self._plugin_js_list.append(self._plugin_js_singal)
     #    #write_whitelist()
     #    self.OutPluginJs.emit(self._plugin_js_list)
+
+# 插件仓库线程命令
+class Plugin_Depository(QThread):
+    OutPluginlist = pyqtSignal(list)
+
+    def __init__(self, parent=None):
+        super(Plugin_Depository, self).__init__(parent)
+        self.controling = True
+    def __del__(self):
+        self.controling = False
+        # self.wait()
+    def run(self):
+        pluginlist = Plugin_Depo_Read()
+        self.OutPluginlist.emit(pluginlist)
 
 # 界面操作
 class Minecraft:
@@ -478,6 +497,8 @@ class Minecraft:
         self.Whitelist_Add_QThread.OutWhitelist.connect(self.SSH_Whitelist)
         self.Whitelist_Del_QThread.OutWhitelist.connect(self.SSH_Whitelist)
 
+        # 设置标签页
+        self.ui.setting_save_button.clicked.connect(self.Setting_Save)
         # 关于标签页
         self.ui.about_vcheck_button.clicked.connect(self.CheckVersion)
 
@@ -505,7 +526,7 @@ class Minecraft:
         self.SSH_QThread.OutProgress.connect(self.ProgressBar)
         self.SSH_QThread.OutConsole.connect(self.Console)
         self.SSH_QThread.OutWhitelist.connect(self.SSH_Whitelist)
-        self.SSH_QThread.OutPlugin.connect(self.SSH_Plugin_Js)
+        self.SSH_QThread.OutPlugin.connect(self.SSH_Plugin)
 
         # 服务器控制
         self.Control_QThread = Control()
@@ -514,8 +535,7 @@ class Minecraft:
         self.Control_QThread.OutPut.connect(self.Control_button_Show)
 
         # 插件管理
-        self.Plugin_JS_QThread = PluginJs()
-        self.ui.plugin_js_list.setRowCount(100)
+        #self.Plugin_JS_QThread = PluginJs()
         self.ui.plugin_dll_list.setColumnCount(3)
         self.ui.plugin_dll_list.setHorizontalHeaderLabels(['插件','简介','是否启用'])
         self.ui.plugin_dll_list.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -528,11 +548,32 @@ class Minecraft:
         self.ui.plugin_script_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.ui.plugin_script_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.plugin_script_list.setRowCount(100)
-        self.Plugin_JS_QThread.OutPluginJs.connect(self.Plugin_Js_Show)
+        #self.Plugin_JS_QThread.OutPluginJs.connect(self.Plugin_Js_Show)
+
+        # 插件仓库
+        self.Plugin_Repo_QThread = Plugin_Depository()
+        self.ui.pluginstore_pstore_list.setRowCount(100)
+        self.ui.pluginstore_pstore_list.setColumnCount(5)
+        self.ui.pluginstore_pstore_list.setHorizontalHeaderLabels(['插件名称','简介','类型','版本','更新日期'])
+        self.ui.pluginstore_pstore_list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.ui.pluginstore_pstore_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.Plugin_Repo_QThread.OutPluginlist.connect(self.Plugin_Repo_Show)
+        #self.ui.plugin_dll_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
     # 关于页面相关控件
     def CheckVersion(self):
         webbrowser.open("https://github.com/Sakitami/MinecraftBDS-Manager/releases", new=0, autoraise=True)
 
+    # 设置页面相关控件
+    def Setting_Save(self):
+        self.ui.setting_save_button.setEnabled(False)
+        self.ui.setting_save_button.setText('保存中')
+        server_locations = self.ui.server_location_edit.text()
+        if not server_locations.endswith('/'):
+            server_locations = server_locations + '/'
+        config.set("Server", "server_location", server_locations)
+        config.write(open("config.cfg", "w"))
+        self.ui.setting_save_button.setEnabled(True)
+        self.ui.setting_save_button.setText('保存成功')
     # SSH连接信号与界面逻辑
     def SSH_Start(self):
         self.ui.Connect_button.setEnabled(False)
@@ -580,9 +621,9 @@ class Minecraft:
             self.ui.whitelist_add_button.setEnabled(True)
             self.ui.whitelist_del_button.setEnabled(True)
             self.Whitelist_QThread.start()
-    def SSH_Plugin_Js(self,start):
+    def SSH_Plugin(self,start):
         if start == 'True':
-            self.Plugin_JS_QThread.start()
+            self.Plugin_Repo_QThread.start()
 
     # 日志监控信号与界面逻辑
     def Log_Start(self):
@@ -750,6 +791,23 @@ class Minecraft:
     def Whitelist_Click(self):
         print('Clicked')
 
+    # 插件仓库信号与界面逻辑
+    def Plugin_Repo_Show(self, pluginlist):
+        self.ui.pluginstore_pstore_list.clearContents()
+        self.column_number = 0
+        for i in range(0,len(pluginlist)):
+            self.plugin = []
+            self.plugin.append(pluginlist[i][0])
+            self.plugin.append(pluginlist[i][1])
+            self.plugin.append(pluginlist[i][2])
+            self.plugin.append(pluginlist[i][3])
+            self.plugin.append(pluginlist[i][4])
+            self.line_number = 0
+            for j in self.plugin:
+                newItem = QTableWidgetItem(str(j))
+                self.ui.pluginstore_pstore_list.setItem(self.line_number, self.column_number,newItem)
+                self.column_number += 1
+            self.line_number += 1
     # 插件管理信号与界面逻辑
     #def Plugin_Js_Add(self):
     #    pass
