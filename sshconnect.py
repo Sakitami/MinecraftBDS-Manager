@@ -29,13 +29,15 @@ class MySSHClient(SSHClient):
 
 
 # SSH连接函数
-def sshconnect(ip, port, usern, passwod, log=None, command=None):
+def sshconnect(ip, port, usern, passwod, log=None, command=None, show=True):
     def console(text):
         #print(text)
         texxt = str(text,encoding='utf-8')
         print(texxt)
         if command == 'cd wine-5.12; ./configure --enable-win64 --without-freetype; make; make install':
         #if command = 'cd wine-5.12; ./configure --enable-win64 --without-freetype; make; make install':
+            pass
+        elif show == False:
             pass
         else:
             with open('Snap/' + log, 'a') as f:
@@ -168,14 +170,4 @@ def sshdirlist(ip, port, usern, passwod, dirname):
     except:
         return []
 if __name__ == "__main__":
-    #sshget('192.168.3.213', 22, 'pi', 'raspberry', '/home/pi/skihome.xyzerjdo')
-    #sshsend('139.180.157.211', 22, 'root', 'HWs0712IloveU', r'C:\Users\harri\Desktop\EZMG\EZMG\development_resource_packs.zip', '/root/EZ/linuxbedrock.zip')
-
-    #with open('build-shell\\test.sh','r') as command:
-    #    command_all = command.read().splitlines()
-    #print(sshconnect('192.168.3.213', 22, 'pi', 'raspberry', command_all))
-    commands = ['screen -D -r EZ']
-    #sshconnect('139.180.157.211', 22, 'root', 'HWs0712IloveU', commands)
-    for i in commands:
-        sshconnect('139.180.157.211', 22, 'root', 'HWs0712IloveU','log.txt',i)
-            #print(text)
+    pass

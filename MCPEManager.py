@@ -260,6 +260,66 @@ class Log_Check(QThread):
             time.sleep(1)
             self.consoleOutPut.emit(True)
             time.sleep(3)
+class LogStartServer(QThread):
+    OutPut = pyqtSignal(bool)
+    
+    def __init__(self, parent=None):
+        super(LogStartServer, self).__init__(parent)
+        self.building = True
+    def __del__(self):
+        self.building = False
+        # self.wait()
+    def run(self):
+        SSH_IP = config.get("SSH", "server_ip")
+        SSH_Port = config.get("SSH", "server_port")
+        SSH_User = config.get("SSH", "server_user")
+        SSH_Password = config.get("SSH", "server_pass")
+        SERVER_Location = config.get("EZ", "server_location")
+        WINE_Location = config.get("EZ", "wine_location")
+        start_server_program = SERVER_Location + 'bedrock_server_mod.exe'
+        start_command = 'screen -R EZ %s %s' % (WINE_Location, start_server_program)
+        self.OutPut.emit(True)
+        sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,command=start_command,show=False)
+class LogStartServerQuit(QThread):
+    OutPut = pyqtSignal(bool)
+    
+    def __init__(self, parent=None):
+        super(LogStartServerQuit, self).__init__(parent)
+        self.building = True
+    def __del__(self):
+        self.building = False
+        # self.wait()
+    def run(self):
+        SSH_IP = config.get("SSH", "server_ip")
+        SSH_Port = config.get("SSH", "server_port")
+        SSH_User = config.get("SSH", "server_user")
+        SSH_Password = config.get("SSH", "server_pass")
+        SERVER_Location = config.get("EZ", "server_location")
+        WINE_Location = config.get("EZ", "wine_location")
+        start_quit_command = 'screen -D EZ'
+        if os.path.exists('Snap/log.txt'):
+            os.remove('Snap/log.txt')
+            with open('Snap/log.txt') as f:
+                f.close()
+        time.sleep(10)
+        sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,command=start_quit_command,show=False)
+        self.OutPut.emit(True)
+class LogStopServer(QThread):
+    OutPut = pyqtSignal(bool)
+    
+    def __init__(self, parent=None):
+        super(LogStopServer, self).__init__(parent)
+        self.building = True
+    def __del__(self):
+        self.building = False
+        # self.wait()
+    def run(self):
+        SSH_IP = config.get("SSH", "server_ip")
+        SSH_Port = config.get("SSH", "server_port")
+        SSH_User = config.get("SSH", "server_user")
+        SSH_Password = config.get("SSH", "server_pass")
+        stop_command = 'screen -X -S "EZ" quit'
+        sshconnect(SSH_IP, SSH_Port, SSH_User, SSH_Password,command=stop_command,show=False)
 
 # 服务器控制线程命令
 class Control(QThread):
@@ -521,10 +581,16 @@ class Minecraft:
         # 日志监控标签页
         self.Log_QThread = Log()
         self.Log_Check_QThread = Log_Check()
+        self.Log_Start_Server_QThread = LogStartServer()
+        self.Log_Stop_Server_QThread = LogStopServer()
+        self.Log_Start_Server_Quit_QThread = LogStartServerQuit()
         self.ui.log_startlog_button.clicked.connect(self.Log_Start)
+        self.ui.log_startserver_button.clicked.connect(self.Server_Start)
+        self.ui.log_stopserver_button.clicked.connect(self.Server_Stop)
         self.Log_QThread.consoleOutPut.connect(self.Log_Check)
         self.Log_Check_QThread.consoleOutPut.connect(self.Log_Show)
-
+        self.Log_Start_Server_QThread.OutPut.connect(self.Server_Start_Quit)
+        self.Log_Start_Server_Quit_QThread.OutPut.connect(self.Log_Start)
         # SSH连接
         self.SSH_QThread = SSH()
         self.ui.Connect_button.clicked.connect(self.SSH_Start)
@@ -615,6 +681,8 @@ class Minecraft:
             config.write(open("config.cfg", "w"))
             self.ui.log_startlog_button.setEnabled(True)
             self.ui.pluginstore_install_button.setEnabled(True)
+            self.ui.log_startserver_button.setEnabled(True)
+            self.ui.log_stopserver_button.setEnabled(True)
             return
         else:
             self.ui.progressBar.reset()
@@ -647,7 +715,19 @@ class Minecraft:
         with open('Snap/log.txt','r')as f:
             f = f.read()
             self.ui.log_log_text.append(f)
-
+    def Server_Start(self):
+        self.ui.log_startserver_button.setEnabled(False)
+        self.ui.log_stopserver_button.setEnabled(False)
+        self.Log_Start_Server_QThread.start()
+    def Server_Start_Quit(self,check):
+        if check == True:
+            self.Log_Start_Server_Quit_QThread.start()
+            self.ui.log_stopserver_button.setEnabled(True)
+    def Server_Stop(self):
+        self.ui.log_stopserver_button.setEnabled(False)
+        self.ui.log_startlog_button.setEnabled(True)
+        self.Log_Stop_Server_QThread.start()
+        self.ui.log_log_text.clear()
     # 一键开服信号与界面逻辑
     def Build_Start(self):
         self.ui.build_build_button.setText('执行中')
@@ -849,7 +929,9 @@ class Minecraft:
     # 控制台显示
     def Console(self, text):
         self.ui.log_log_text.append(text)
-
+    def Console_Clear(self,check):
+        if check == True:
+            self.ui.log_log_text.clear()
 
 if __name__ == '__main__':
     add = QApplication([])
