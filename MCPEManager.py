@@ -11,12 +11,13 @@ import re
 import shutil
 import time
 import webbrowser
+import base64
 
 from PyQt5 import uic
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView,
-                             QMainWindow, QMessageBox, QTableWidgetItem)
+                             QMainWindow, QMessageBox, QTableWidgetItem,QMenu,QAction,QFileDialog)
 
 from sshconnect import sshconnect, sshdirlist, sshget, sshsend
 from whitelist import (add_whitelist, del_whitelist, read_whitelist,
@@ -99,7 +100,31 @@ class SSH(QThread):
         self.OutPlugin.emit('True')
         self.OutPut.emit('连接成功')
         return
+class SSHOpen(QThread):
+    OutPut = pyqtSignal(bool)
 
+    def __init__(self, parent=None):
+        super(SSHOpen, self).__init__(parent)
+        self.connecting = True
+
+    def __del__(self):
+        self.connceting = False
+        # self.wait()
+    def run(self):
+        decodes = str(config.get("SETTING","opend_ssh"))
+        shutil.copy(decodes,'Snap/Opend_ssh.txt')
+        with open('Snap/Opend_ssh.txt','r',encoding='UTF-8') as f:
+            ssh = f.read()
+            print(ssh)
+            sshinfo = str(base64.b64decode(ssh),encoding = "utf8")
+            sshinfo = sshinfo.split(';')
+            f.close()
+        config.set("SSH", "server_ip",sshinfo[0])
+        config.set("SSH", "server_port",sshinfo[1])
+        config.set("SSH", "server_user",sshinfo[2])
+        config.set("SSH", "server_pass",sshinfo[3])
+        config.write(open("config.cfg", "w"))
+        self.OutPut.emit(True)
 # 一键搭建线程命令
 class Build(QThread):
     consoleOutPut = pyqtSignal(str)
@@ -591,6 +616,7 @@ class Minecraft:
         self.Log_Check_QThread.consoleOutPut.connect(self.Log_Show)
         self.Log_Start_Server_QThread.OutPut.connect(self.Server_Start_Quit)
         self.Log_Start_Server_Quit_QThread.OutPut.connect(self.Log_Start)
+
         # SSH连接
         self.SSH_QThread = SSH()
         self.ui.Connect_button.clicked.connect(self.SSH_Start)
@@ -599,6 +625,17 @@ class Minecraft:
         self.SSH_QThread.OutConsole.connect(self.Console)
         self.SSH_QThread.OutWhitelist.connect(self.SSH_Whitelist)
         self.SSH_QThread.OutPlugin.connect(self.SSH_Plugin)
+
+        # SSH保存
+        menu = QMenu()
+        self.SSH_Open_QThread = SSHOpen()
+        self.action_save = QAction("保存SSH配置",menu)
+        self.action_open = QAction("打开SSH配置",menu)
+        menu.addActions([self.action_save,self.action_open])
+        #action_open.setData(QFileDialog.getOpenFileName(self,"选择BSM文件","C:\Users\Administrator\Desktop","BSM文件(*.bsm)"))
+        self.ui.ssh_save_button.triggered.connect(self.SSH_Open)
+        self.ui.ssh_save_button.setMenu(menu)
+        self.SSH_Open_QThread.OutPut.connect(self.SSH_Open_Show)
 
         # 服务器控制
         self.Control_QThread = Control()
@@ -636,7 +673,6 @@ class Minecraft:
     # 关于页面相关控件
     def CheckVersion(self):
         webbrowser.open("https://github.com/Sakitami/MinecraftBDS-Manager/releases", new=0, autoraise=True)
-
     # 设置页面相关控件
     def Setting_Save(self):
         self.ui.setting_save_button.setEnabled(False)
@@ -691,7 +727,21 @@ class Minecraft:
             self.ui.Port_edit.setEnabled(True)
             self.ui.User_edit.setEnabled(True)
             self.ui.Password_edit.setEnabled(True)
-        
+ 
+    def SSH_Open(self):
+        self.action_open.setData(QFileDialog.getOpenFileName(self.ui,"选择BSM文件",r"C:\Users\Administrator\Desktop","BSM文件(*.bsm)"))
+        self.opend_ssh=self.action_open.data()[0]
+        config.set("SETTING", "opend_ssh", self.opend_ssh)
+        config.write(open("config.cfg", "w"))
+        print(self.opend_ssh)
+        self.SSH_Open_QThread.start()
+    def SSH_Open_Show(self,check):
+        if check == True:
+            self.ui.IP_edit.setText(config.get("SSH", "server_ip"))
+            self.ui.Port_edit.setText(config.get("SSH", "server_port"))
+            self.ui.User_edit.setText(config.get("SSH", "server_user"))
+            self.ui.Password_edit.setText(config.get("SSH", "server_pass"))
+
     def SSH_Whitelist(self,start):
         if start == 'True':
             self.ui.whitelist_add_edit.setEnabled(True)
